@@ -2,7 +2,7 @@ from typing import List, TypedDict, Optional
 from dataclasses import  dataclass
 from enum import Enum
 
-from .postgres import Postgres
+from postgres import Postgres
 
 class TimeseriesInterval(Enum):
   MINUTE = 'minute'

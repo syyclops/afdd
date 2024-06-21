@@ -1,31 +1,21 @@
 # Use a multi-stage build to keep the final image size down
 FROM python:3.11-buster as builder
 
-# Install poetry at specified version
-RUN pip install poetry==1.4.2
-
 # Install PostgreSQL client libraries
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables for poetry
-ENV POETRY_NO_INTERACTION=1 \
-POETRY_VIRTUALENVS_IN_PROJECT=1 \
-POETRY_VIRTUALENVS_CREATE=1 \
-POETRY_CACHE_DIR=/tmp/poetry_cache
-
-WORKDIR /app
-
 # Copy only the files needed for the poetry installation
-COPY pyproject.toml poetry.lock ./
 RUN touch README.md
 
-COPY brontes brontes
-COPY scripts scripts
+WORKDIR /afdd
 
-RUN poetry install
-RUN poetry self add poetry-dotenv-plugin
+# Install any needed packages specified in requirements.txt
+COPY requirements.txt /afdd
+RUN pip install -r requirements.txt
 
+# copies everything into container
+COPY . /afdd
 
-CMD ["poetry", "run", "afdd"]
+CMD ["python", "main.py"]

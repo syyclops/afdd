@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  pg:
+    build:
+      context: .
+      dockerfile: Dockerfile.pg
+    volumes:
+      - postgresqldata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - local
+
+  afdd:
+    build:
+      context: .
+      dockerfile: Dockerfile.afdd
+    volumes:
+      - ./logs:/logs
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://postgres:postgres@pg:5432/postgres
+    depends_on:
+      - pg
+    networks:
+      - local
+
+networks:
+  local:
+
+volumes:
+  postgresqldata:
