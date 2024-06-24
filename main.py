@@ -9,9 +9,8 @@ import os
 
 from models import Anomaly
 from models import Rule, TimeseriesData
-from utils import load_graph, load_timeseries, append_anomalies
+from utils import load_graph, load_timeseries, append_anomalies, load_rules
 from rule_functions import co2_too_high
-from setup import *
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules
@@ -37,22 +36,13 @@ def analyze_data(ts_data_list: List[TimeseriesData], graphInfoDF: pd.DataFrame, 
 def main():
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
-
-  # set up anomalies table in postgres
-  setup_anomalies_table(conn=conn)
-  setup_rules_table(conn=conn)
   
   # load co2 rule into rules table in postgres
   co2Rule = Rule(name='CO2 Too High', id=1, description='ppm above 1000', sensors_required=[URIRef("https://brickschema.org/schema/Brick#CO2_Sensor")])
   rule = [co2Rule]
   load_rules(conn=conn, rule_list=rule)
   
-  # # loading in device data to dataframe
-  # facility_uri = 'https://syyclops.com/example/example'
-  # device_list = [{'device_name': 'VG21D16414', 'device_udid': '5e81563a-42ca-4137-9b36-f423a6f27a73'}, 
-  #                {'device_name': 'VG21D22031', 'device_udid': '9cdcab62-892c-46c8-b3d2-3d525512576a'}, 
-  #                {'device_name': 'VG21D15018', 'device_udid': '8493663d-21bf-4fa7-ba8a-163308655319'}]
-  
+  # Load graph data into dataframe
   graph_dataframe = load_graph(devices='kaiterra_example.ttl')
   logger.info(graph_dataframe)
 

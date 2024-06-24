@@ -3,7 +3,8 @@ from typing import List
 import pandas as pd
 from psycopg import Connection
 
-from models import PointReading, TimeseriesData
+from models import PointReading, TimeseriesData, Rule
+from logger import logger
 
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
   """Insert a list of timeseries data into the timeseries table."""
@@ -30,6 +31,17 @@ def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
     with conn.cursor() as cur:
       cur.executemany(query, anomaly_list)
       conn.commit()
+  except Exception as e:
+    raise e
+  
+def load_rules(conn: Connection, rule_list: List[Rule]):
+  rule_list = [(rule.id, rule.name, rule.description, rule.sensors_required) for rule in rule_list]
+  query = "INSERT INTO rules (id, name, description, sensors) VALUES (%s, %s, %s, %s)"
+  try:
+    with conn.cursor() as cur:
+      cur.executemany(query, rule_list)
+      cur.execute('COMMIT')
+      logger.info('Rule successfully loaded. ')
   except Exception as e:
     raise e
 
