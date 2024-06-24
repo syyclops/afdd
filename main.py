@@ -4,11 +4,12 @@ import pandas as pd
 import time
 import datetime
 from logger import logger
+import psycopg
+import os
 
-from timescale import TimeseriesData
-from anomaly import Anomaly
-from rule import Rule
-from anomaly_ops import load_graph, load_timeseries, append_anomalies
+from models import Anomaly
+from models import Rule, TimeseriesData
+from utils import load_graph, load_timeseries, append_anomalies
 from rule_functions import co2_too_high
 from setup import *
 
@@ -20,26 +21,31 @@ def analyze_data(ts_data_list: List[TimeseriesData], graphInfoDF: pd.DataFrame, 
     data = i['data']  # list of pointReadings
     for pointReading in data:
       if rule_func(pointReading.value):
-        anomaly = Anomaly(name=rule.name, 
-                          rule=rule.id,
-                          timestamp=pointReading.ts, 
-                          device=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'device name'].values[0]),  # gets device name based on unique timeseriesid in graphInfoDF
-                          point=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'point'].values[0]),
-                          value=pointReading.value)
+        anomaly = Anomaly(
+            name=rule.name, 
+            rule=rule.id,
+            timestamp=pointReading.ts, 
+            device=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'device name'].values[0]),  # gets device name based on unique timeseriesid in graphInfoDF
+            point=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'point'].values[0]),
+            value=pointReading.value
+        )
         anomaly_list.append(anomaly.to_tuple())  # change to tuple to insert as row in postgres table
         logger.info(anomaly_list)
   logger.info('finished going through data')
   return anomaly_list
 
 def main():
+  postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
+  conn = psycopg.connect(postgres_conn_string)
+
   # set up anomalies table in postgres
-  setup_anomalies_table()
-  setup_rules_table()
+  setup_anomalies_table(conn=conn)
+  setup_rules_table(conn=conn)
   
   # load co2 rule into rules table in postgres
   co2Rule = Rule(name='CO2 Too High', id=1, description='ppm above 1000', sensors_required=[URIRef("https://brickschema.org/schema/Brick#CO2_Sensor")])
   rule = [co2Rule]
-  load_rules(rule)
+  load_rules(conn=conn, rule_list=rule)
   
   # # loading in device data to dataframe
   # facility_uri = 'https://syyclops.com/example/example'
