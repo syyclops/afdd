@@ -323,3 +323,31 @@ end time: 2024-06-24T16:31:29
 2024-06-24 16:31:29,496 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1743.0), ('2024-06-24T16:30:23+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1149.0), ('2024-06-24T16:30:50+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1760.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1657.0)]
 2024-06-24 16:31:29,496 - INFO: finished going through data
 2024-06-24 16:31:29,497 - INFO: analyzing done
+2024-06-24 16:49:52,230 - INFO: Rule successfully loaded. 
+2024-06-24 16:49:53,090 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:49:53,094 - INFO: start time: 2024-06-24T16:44:53 
+end time: 2024-06-24T16:49:53
+2024-06-24 16:49:53,096 - INFO: [{'data': [PointReading(ts='2024-06-24T16:49:52+00:00', value=530.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T16:49:52+00:00', value=417.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T16:49:52+00:00', value=1340.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 16:49:53,097 - INFO: [('2024-06-24T16:49:52+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1340.0)]
+2024-06-24 16:49:53,097 - INFO: finished going through data
+2024-06-24 16:49:53,097 - INFO: analyzing done

@@ -17,5 +17,5 @@ CREATE TABLE rules (
   id INT NOT NULL,
   name TEXT NOT NULL,
   description TEXT NOT NULL,
-  sensors TEXT[] NOT NULL,
-)
+  sensors TEXT[] NOT NULL
+);

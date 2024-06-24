@@ -15,4 +15,4 @@ RUN pip install -r requirements.txt
 # copies everything into container
 COPY . /app
 
-CMD ["python", "create_sample_data.py"]
+CMD ["python", "-m", "sample_data.create_sample_data"]
