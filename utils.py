@@ -17,9 +17,6 @@ def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
 
   query += ", ".join(placeholders)
 
-  print(query)
-  print(values)
-
   try:
     with conn.cursor() as cur:
       cur.execute(query, values)
