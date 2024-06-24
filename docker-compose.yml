@@ -16,7 +16,20 @@ services:
       context: .
       dockerfile: Dockerfile.afdd
     volumes:
-      - ./logs:/logs
+      - ./logs:/afdd/logs
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://postgres:postgres@pg:5432/postgres
+    depends_on:
+      - pg
+    networks:
+      - local
+  
+  data:
+    build:
+      context: .
+      dockerfile: Dockerfile.data
     env_file:
       - .env
     environment:

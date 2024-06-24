@@ -53,7 +53,7 @@ def main():
   # running anomaly detect every 30 minutes
   while True:
     end_time = datetime.datetime.now()
-    start_time = end_time - datetime.timedelta(minutes=30)
+    start_time = end_time - datetime.timedelta(minutes=5)
     end_time = end_time.isoformat(timespec='seconds')
     start_time = start_time.isoformat(timespec='seconds')
     logger.info(f'start time: {start_time} \nend time: {end_time}')
@@ -70,7 +70,7 @@ def main():
     # append anomalies to anomalies table in postgres
     append_anomalies(anomaly_list)
 
-    time.sleep(1800)
+    time.sleep(300)
 
 if __name__ == '__main__':
   main()
