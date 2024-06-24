@@ -3,8 +3,8 @@ from typing import List
 import pandas as pd
 from psycopg import Connection
 
-from models import PointReading, TimeseriesData, Rule
-from logger import logger
+from afdd.models import PointReading, TimeseriesData, Rule
+from afdd.logger import logger
 
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
   """Insert a list of timeseries data into the timeseries table."""

@@ -3,14 +3,14 @@ from typing import List
 import pandas as pd
 import time
 import datetime
-from logger import logger
+from afdd.logger import logger
 import psycopg
 import os
 
-from models import Anomaly
-from models import Rule, TimeseriesData
-from utils import load_graph, load_timeseries, append_anomalies, load_rules
-from rule_functions import co2_too_high
+from afdd.models import Anomaly
+from afdd.models import Rule, TimeseriesData
+from afdd.utils import load_graph, load_timeseries, append_anomalies, load_rules
+from afdd.rule_functions import co2_too_high
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules

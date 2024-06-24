@@ -8,11 +8,12 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Install any needed packages specified in requirements.txt
-COPY requirements.txt /app
-RUN pip install -r requirements.txt
+# Install poetry
+RUN pip install poetry
 
 # copies everything into container
 COPY . /app
 
-CMD ["python", "-m", "sample_data.create_sample_data"]
+RUN poetry install
+
+CMD ["poetry", "run", "sample_data"]

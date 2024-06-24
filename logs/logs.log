@@ -351,3 +351,61 @@ end time: 2024-06-24T16:49:53
 2024-06-24 16:49:53,097 - INFO: [('2024-06-24T16:49:52+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1340.0)]
 2024-06-24 16:49:53,097 - INFO: finished going through data
 2024-06-24 16:49:53,097 - INFO: analyzing done
+2024-06-24 17:21:05,243 - INFO: Rule successfully loaded. 
+2024-06-24 17:21:06,239 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 17:21:06,246 - INFO: start time: 2024-06-24T17:16:06 
+end time: 2024-06-24T17:21:06
+2024-06-24 17:21:06,250 - INFO: [{'data': [PointReading(ts='2024-06-24T17:20:42+00:00', value=292.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T17:20:42+00:00', value=1718.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T17:20:42+00:00', value=1014.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 17:21:06,251 - INFO: [('2024-06-24T17:20:42+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1718.0)]
+2024-06-24 17:21:06,251 - INFO: [('2024-06-24T17:20:42+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1718.0), ('2024-06-24T17:20:42+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1014.0)]
+2024-06-24 17:21:06,252 - INFO: finished going through data
+2024-06-24 17:21:06,252 - INFO: analyzing done
+2024-06-24 17:27:46,172 - INFO: Rule successfully loaded. 
+2024-06-24 17:27:47,337 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 17:27:47,349 - INFO: start time: 2024-06-24T17:22:47 
+end time: 2024-06-24T17:27:47
+2024-06-24 17:27:47,352 - INFO: [{'data': [PointReading(ts='2024-06-24T17:27:47+00:00', value=1766.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T17:27:47+00:00', value=1165.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T17:27:47+00:00', value=856.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 17:27:47,353 - INFO: [('2024-06-24T17:27:47+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1766.0)]
+2024-06-24 17:27:47,353 - INFO: [('2024-06-24T17:27:47+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1766.0), ('2024-06-24T17:27:47+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1165.0)]
+2024-06-24 17:27:47,354 - INFO: finished going through data
+2024-06-24 17:27:47,354 - INFO: analyzing done

@@ -3,7 +3,7 @@ import pandas as pd
 import re
 
 from rdflib import URIRef, Literal
-from main import *
+from afdd.main import *
 from timescale import TimeseriesData, PointReading
 
 def test_load_graph_success():

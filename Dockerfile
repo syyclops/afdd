@@ -6,16 +6,14 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy only the files needed for the poetry installation
-RUN touch README.md
-
 WORKDIR /afdd
 
-# Install any needed packages specified in requirements.txt
-COPY requirements.txt /afdd
-RUN pip install -r requirements.txt
+# Install poetry 
+RUN pip install poetry
 
 # copies everything into container
 COPY . /afdd
 
-CMD ["python", "main.py"]
+RUN poetry install
+
+CMD ["poetry", "run", "afdd"]
