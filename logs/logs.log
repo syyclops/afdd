@@ -104,3 +104,308 @@ end time: 2024-06-24T14:58:23
 2024-06-24 14:58:23,717 - INFO: [('2024-06-24T14:56:21+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1509.0), ('2024-06-24T14:55:21+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1566.0), ('2024-06-24T14:56:21+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1499.0), ('2024-06-24T14:55:21+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1405.0), ('2024-06-24T14:56:21+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1556.0), ('2024-06-24T14:57:21+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1531.0), ('2024-06-24T14:58:21+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1109.0)]
 2024-06-24 14:58:23,718 - INFO: finished going through data
 2024-06-24 14:58:23,719 - INFO: analyzing done
+2024-06-24 16:21:34,513 - INFO: Rule successfully loaded. 
+2024-06-24 16:21:35,711 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:21:35,717 - INFO: start time: 2024-06-24T16:16:35 
+end time: 2024-06-24T16:21:35
+2024-06-24 16:22:13,239 - INFO: Rule successfully loaded. 
+2024-06-24 16:22:14,850 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:22:14,874 - INFO: start time: 2024-06-24T16:17:14 
+end time: 2024-06-24T16:22:14
+2024-06-24 16:23:46,516 - INFO: Rule successfully loaded. 
+2024-06-24 16:23:47,462 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:23:47,471 - INFO: start time: 2024-06-24T16:18:47 
+end time: 2024-06-24T16:23:47
+2024-06-24 16:24:55,146 - INFO: Rule successfully loaded. 
+2024-06-24 16:24:56,306 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:24:56,311 - INFO: start time: 2024-06-24T16:19:56 
+end time: 2024-06-24T16:24:56
+2024-06-24 16:26:06,358 - INFO: Rule successfully loaded. 
+2024-06-24 16:26:07,262 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:26:07,267 - INFO: start time: 2024-06-24T16:21:07 
+end time: 2024-06-24T16:26:07
+2024-06-24 16:28:27,984 - INFO: Rule successfully loaded. 
+2024-06-24 16:28:29,055 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:28:29,065 - INFO: start time: 2024-06-24T16:23:29 
+end time: 2024-06-24T16:28:29
+2024-06-24 16:30:45,236 - INFO: Rule successfully loaded. 
+2024-06-24 16:30:46,366 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:30:46,371 - INFO: start time: 2024-06-24T16:25:46 
+end time: 2024-06-24T16:30:46
+2024-06-24 16:30:46,373 - INFO: [{'data': [PointReading(ts='2024-06-24T16:26:06+00:00', value=1306.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:27:06+00:00', value=142.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:28:06+00:00', value=28.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:28:22+00:00', value=1391.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:29:22+00:00', value=496.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:30:23+00:00', value=28.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T16:26:06+00:00', value=1978.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:27:06+00:00', value=1803.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:28:06+00:00', value=1114.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:28:22+00:00', value=1606.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:29:22+00:00', value=299.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:30:23+00:00', value=355.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T16:26:06+00:00', value=288.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:27:06+00:00', value=1285.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:28:06+00:00', value=1046.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:28:22+00:00', value=1743.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:29:22+00:00', value=504.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:30:23+00:00', value=1149.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 16:30:46,374 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0)]
+2024-06-24 16:30:46,375 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0)]
+2024-06-24 16:30:46,375 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0)]
+2024-06-24 16:30:46,376 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0)]
+2024-06-24 16:30:46,376 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0)]
+2024-06-24 16:30:46,376 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0)]
+2024-06-24 16:30:46,377 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0)]
+2024-06-24 16:30:46,377 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0)]
+2024-06-24 16:30:46,377 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1743.0)]
+2024-06-24 16:30:46,378 - INFO: [('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1306.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:26:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1978.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1743.0), ('2024-06-24T16:30:23+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1149.0)]
+2024-06-24 16:30:46,378 - INFO: finished going through data
+2024-06-24 16:30:46,378 - INFO: analyzing done
+2024-06-24 16:31:27,305 - INFO: Rule successfully loaded. 
+2024-06-24 16:31:29,390 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:31:29,412 - INFO: start time: 2024-06-24T16:26:29 
+end time: 2024-06-24T16:31:29
+2024-06-24 16:31:29,480 - INFO: [{'data': [PointReading(ts='2024-06-24T16:27:06+00:00', value=142.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:28:06+00:00', value=28.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:28:22+00:00', value=1391.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:29:22+00:00', value=496.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:30:23+00:00', value=28.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:30:50+00:00', value=100.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2'), PointReading(ts='2024-06-24T16:31:27+00:00', value=1973.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T16:27:06+00:00', value=1803.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:28:06+00:00', value=1114.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:28:22+00:00', value=1606.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:29:22+00:00', value=299.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:30:23+00:00', value=355.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:30:50+00:00', value=446.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2'), PointReading(ts='2024-06-24T16:31:27+00:00', value=575.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T16:27:06+00:00', value=1285.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:28:06+00:00', value=1046.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:28:22+00:00', value=1743.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:29:22+00:00', value=504.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:30:23+00:00', value=1149.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:30:50+00:00', value=1760.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2'), PointReading(ts='2024-06-24T16:31:27+00:00', value=1657.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 16:31:29,483 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0)]
+2024-06-24 16:31:29,484 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0)]
+2024-06-24 16:31:29,486 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0)]
+2024-06-24 16:31:29,487 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0)]
+2024-06-24 16:31:29,489 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0)]
+2024-06-24 16:31:29,490 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0)]
+2024-06-24 16:31:29,491 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0)]
+2024-06-24 16:31:29,492 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1743.0)]
+2024-06-24 16:31:29,494 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1743.0), ('2024-06-24T16:30:23+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1149.0)]
+2024-06-24 16:31:29,495 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1743.0), ('2024-06-24T16:30:23+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1149.0), ('2024-06-24T16:30:50+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1760.0)]
+2024-06-24 16:31:29,496 - INFO: [('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1391.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1973.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1803.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1114.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1606.0), ('2024-06-24T16:27:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1285.0), ('2024-06-24T16:28:06+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1046.0), ('2024-06-24T16:28:22+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1743.0), ('2024-06-24T16:30:23+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1149.0), ('2024-06-24T16:30:50+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1760.0), ('2024-06-24T16:31:27+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1657.0)]
+2024-06-24 16:31:29,496 - INFO: finished going through data
+2024-06-24 16:31:29,497 - INFO: analyzing done
+2024-06-24 16:49:52,230 - INFO: Rule successfully loaded. 
+2024-06-24 16:49:53,090 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 16:49:53,094 - INFO: start time: 2024-06-24T16:44:53 
+end time: 2024-06-24T16:49:53
+2024-06-24 16:49:53,096 - INFO: [{'data': [PointReading(ts='2024-06-24T16:49:52+00:00', value=530.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T16:49:52+00:00', value=417.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T16:49:52+00:00', value=1340.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 16:49:53,097 - INFO: [('2024-06-24T16:49:52+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1340.0)]
+2024-06-24 16:49:53,097 - INFO: finished going through data
+2024-06-24 16:49:53,097 - INFO: analyzing done
+2024-06-24 17:21:05,243 - INFO: Rule successfully loaded. 
+2024-06-24 17:21:06,239 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 17:21:06,246 - INFO: start time: 2024-06-24T17:16:06 
+end time: 2024-06-24T17:21:06
+2024-06-24 17:21:06,250 - INFO: [{'data': [PointReading(ts='2024-06-24T17:20:42+00:00', value=292.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T17:20:42+00:00', value=1718.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T17:20:42+00:00', value=1014.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 17:21:06,251 - INFO: [('2024-06-24T17:20:42+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1718.0)]
+2024-06-24 17:21:06,251 - INFO: [('2024-06-24T17:20:42+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1718.0), ('2024-06-24T17:20:42+00:00', 1, 'CO2 Too High', 'VG21D22031', 'https://syyclops/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2', 1014.0)]
+2024-06-24 17:21:06,252 - INFO: finished going through data
+2024-06-24 17:21:06,252 - INFO: analyzing done
+2024-06-24 17:27:46,172 - INFO: Rule successfully loaded. 
+2024-06-24 17:27:47,337 - INFO:                                                 class  ... device name
+0     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D16414
+1   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D16414
+2   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D16414
+3   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D16414
+4   https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D16414
+5   https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D16414
+6     https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D15018
+7   https://brickschema.org/schema/Brick#Relative_...  ...  VG21D15018
+8   https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D15018
+9   https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D15018
+10  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D15018
+11  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D15018
+12    https://brickschema.org/schema/Brick#CO2_Sensor  ...  VG21D22031
+13  https://brickschema.org/schema/Brick#Relative_...  ...  VG21D22031
+14  https://brickschema.org/schema/Brick#PM10_Leve...  ...  VG21D22031
+15  https://brickschema.org/schema/Brick#PM2.5_Lev...  ...  VG21D22031
+16  https://brickschema.org/schema/Brick#Temperatu...  ...  VG21D22031
+17  https://brickschema.org/schema/Brick#TVOC_Leve...  ...  VG21D22031
+
+[18 rows x 4 columns]
+2024-06-24 17:27:47,349 - INFO: start time: 2024-06-24T17:22:47 
+end time: 2024-06-24T17:27:47
+2024-06-24 17:27:47,352 - INFO: [{'data': [PointReading(ts='2024-06-24T17:27:47+00:00', value=1766.0, timeseriesid='5e81563a-42ca-4137-9b36-f423a6f27a73-co2')], 'timeseriesid': '5e81563a-42ca-4137-9b36-f423a6f27a73-co2'}, {'data': [PointReading(ts='2024-06-24T17:27:47+00:00', value=1165.0, timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-co2')], 'timeseriesid': '8493663d-21bf-4fa7-ba8a-163308655319-co2'}, {'data': [PointReading(ts='2024-06-24T17:27:47+00:00', value=856.0, timeseriesid='9cdcab62-892c-46c8-b3d2-3d525512576a-co2')], 'timeseriesid': '9cdcab62-892c-46c8-b3d2-3d525512576a-co2'}]
+2024-06-24 17:27:47,353 - INFO: [('2024-06-24T17:27:47+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1766.0)]
+2024-06-24 17:27:47,353 - INFO: [('2024-06-24T17:27:47+00:00', 1, 'CO2 Too High', 'VG21D16414', 'https://syyclops/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2', 1766.0), ('2024-06-24T17:27:47+00:00', 1, 'CO2 Too High', 'VG21D15018', 'https://syyclops/example/example/point/8493663d-21bf-4fa7-ba8a-163308655319-co2', 1165.0)]
+2024-06-24 17:27:47,354 - INFO: finished going through data
+2024-06-24 17:27:47,354 - INFO: analyzing done

@@ -2,10 +2,11 @@ version: "3.8"
 services:
   pg:
     build:
-      context: .
+      context: ./postgres
       dockerfile: Dockerfile.pg
     volumes:
       - postgresqldata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 5432:5432
     networks:
@@ -14,7 +15,6 @@ services:
   afdd:
     build:
       context: .
-      dockerfile: Dockerfile.afdd
     volumes:
       - ./logs:/afdd/logs
     env_file:
@@ -25,11 +25,11 @@ services:
       - pg
     networks:
       - local
-  
-  data:
+
+  sample-data:
     build:
       context: .
-      dockerfile: Dockerfile.data
+      dockerfile: ./sample_data/Dockerfile
     env_file:
       - .env
     environment:

@@ -3,14 +3,14 @@ from typing import List
 import pandas as pd
 import time
 import datetime
-from logger import logger
+from afdd.logger import logger
+import psycopg
+import os
 
-from timescale import TimeseriesData
-from anomaly import Anomaly
-from rule import Rule
-from anomaly_ops import load_graph, load_timeseries, append_anomalies
-from rule_functions import co2_too_high
-from setup import *
+from afdd.models import Anomaly
+from afdd.models import Rule, TimeseriesData
+from afdd.utils import load_graph, load_timeseries, append_anomalies, load_rules
+from afdd.rule_functions import co2_too_high
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules
@@ -20,33 +20,29 @@ def analyze_data(ts_data_list: List[TimeseriesData], graphInfoDF: pd.DataFrame, 
     data = i['data']  # list of pointReadings
     for pointReading in data:
       if rule_func(pointReading.value):
-        anomaly = Anomaly(name=rule.name, 
-                          rule=rule.id,
-                          timestamp=pointReading.ts, 
-                          device=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'device name'].values[0]),  # gets device name based on unique timeseriesid in graphInfoDF
-                          point=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'point'].values[0]),
-                          value=pointReading.value)
+        anomaly = Anomaly(
+            name=rule.name, 
+            rule=rule.id,
+            timestamp=pointReading.ts, 
+            device=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'device name'].values[0]),  # gets device name based on unique timeseriesid in graphInfoDF
+            point=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'point'].values[0]),
+            value=pointReading.value
+        )
         anomaly_list.append(anomaly.to_tuple())  # change to tuple to insert as row in postgres table
         logger.info(anomaly_list)
   logger.info('finished going through data')
   return anomaly_list
 
 def main():
-  # set up anomalies table in postgres
-  setup_anomalies_table()
-  setup_rules_table()
+  postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
+  conn = psycopg.connect(postgres_conn_string)
   
   # load co2 rule into rules table in postgres
   co2Rule = Rule(name='CO2 Too High', id=1, description='ppm above 1000', sensors_required=[URIRef("https://brickschema.org/schema/Brick#CO2_Sensor")])
   rule = [co2Rule]
-  load_rules(rule)
+  load_rules(conn=conn, rule_list=rule)
   
-  # # loading in device data to dataframe
-  # facility_uri = 'https://syyclops.com/example/example'
-  # device_list = [{'device_name': 'VG21D16414', 'device_udid': '5e81563a-42ca-4137-9b36-f423a6f27a73'}, 
-  #                {'device_name': 'VG21D22031', 'device_udid': '9cdcab62-892c-46c8-b3d2-3d525512576a'}, 
-  #                {'device_name': 'VG21D15018', 'device_udid': '8493663d-21bf-4fa7-ba8a-163308655319'}]
-  
+  # Load graph data into dataframe
   graph_dataframe = load_graph(devices='kaiterra_example.ttl')
   logger.info(graph_dataframe)
 
@@ -60,7 +56,7 @@ def main():
     brick_class_co2 = "https://brickschema.org/schema/Brick#CO2_Sensor"
 
     # load timeseries data for co2 sensors
-    co2_list = load_timeseries(graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
+    co2_list = load_timeseries(conn=conn, graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
     logger.info(co2_list)
     print(co2_list)
     # find anomalies in said data and put in list of tuples
@@ -68,7 +64,7 @@ def main():
     logger.info('analyzing done')
 
     # append anomalies to anomalies table in postgres
-    append_anomalies(anomaly_list)
+    append_anomalies(conn, anomaly_list)
 
     time.sleep(300)
 
