@@ -12,19 +12,19 @@ services:
     networks:
       - local
 
-  # afdd:
-  #   build:
-  #     context: .
-  #   volumes:
-  #     - ./logs:/afdd/logs
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - POSTGRES_CONNECTION_STRING=postgresql://postgres:postgres@pg:5432/postgres
-  #   depends_on:
-  #     - pg
-  #   networks:
-  #     - local
+  afdd:
+    build:
+      context: .
+    volumes:
+      - ./logs:/afdd/logs
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://postgres:postgres@pg:5432/postgres
+    depends_on:
+      - pg
+    networks:
+      - local
 
   sample-data:
     build:

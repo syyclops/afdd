@@ -66,7 +66,7 @@ def main():
     brick_class_co2 = "https://brickschema.org/schema/Brick#CO2_Sensor"
 
     # load timeseries data for co2 sensors
-    co2_list = load_timeseries(graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
+    co2_list = load_timeseries(conn=conn, graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
     logger.info(co2_list)
     print(co2_list)
     # find anomalies in said data and put in list of tuples
@@ -74,7 +74,7 @@ def main():
     logger.info('analyzing done')
 
     # append anomalies to anomalies table in postgres
-    append_anomalies(anomaly_list)
+    append_anomalies(conn, anomaly_list)
 
     time.sleep(300)
 

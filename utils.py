@@ -81,24 +81,26 @@ def load_graph(devices: str) -> pd.DataFrame:
 
 def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> List[TimeseriesData]:
   # gets all of the timeseriesids that correspond to the given brick class
-  tsid = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
+  timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
 
   # converting timeseriesids to strings instead of literals so we can fetch them from the database
-  for i in range(len(tsid)):
-    tsid[i] = str(tsid[i])
+  timeseries_ids = [str(id) for id in timeseries_ids]
 
-  query = """
+  # Generating placeholders for SQL IN clause
+  placeholders = ', '.join(['%s' for _ in timeseries_ids])
+
+  query = f"""
     SELECT ts, value, timeseriesid 
     FROM timeseries
-    WHERE timeseriesid ANY(%s) AND ts >= %s AND ts <= %s
+    WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
     ORDER BY ts ASC
   """
 
   with conn.cursor() as cur:
-    cur.execute(query, (tsid, start_time, end_time))
+    cur.execute(query, timeseries_ids + [start_time, end_time])
     rows = cur.fetchall()
     result: List[TimeseriesData] = []
-    for id in tsid:
+    for id in timeseries_ids:
       data = [PointReading(ts=row[0].isoformat(), value=row[1], timeseriesid=row[2]) for row in rows if row[2] == id]
       result.append(TimeseriesData(data=data, timeseriesid=id))
     conn.commit()
