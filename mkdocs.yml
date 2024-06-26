@@ -1,0 +1,6 @@
+site_name: AFDD Docs
+repo_url: https://github.com/syyclops/afdd
+nav:
+  - Home: index.md
+  - Models: models.md
+  
