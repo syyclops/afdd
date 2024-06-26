@@ -1,42 +1,72 @@
 from dataclasses import dataclass
 from typing import List
 from typing import TypedDict
+from enum import Enum
+
+@dataclass
+class Metric(Enum):
+  AVERAGE = 'average'
+  MAX = 'max'
+  MIN = 'min'
+
+@dataclass
+class Severity(Enum):
+  CRITICAL = 'critical'
+  HIGH = 'high'
+  LOW = 'low'
+
+@dataclass
+class Condition():
+  metric: Metric
+  threshold: int | tuple
+  operator: str
+  duration: int
+  severity: Severity
+  
+  def to_dict(self):
+    condition_dict = {'metric': self.metric.value, 
+                      'threshold': self.threshold, 
+                      'operator': self.operator, 
+                      'duration': self.duration,
+                      'severity': self.severity.value}
+    return condition_dict
 
 @dataclass
 class Anomaly:
-  name: str
-  rule: int
-  timestamp: str
-  device: str
-  point: str
+  start_time: str
+  end_time: str
+  rule_id: int
   value: float
+  timeseriesid: str
 
-  def to_dict(self):
-    anomaly_dict = {'timestamp': self.timestamp,
-                    'rule': self.rule,
-                    'name': self.name, 
-                    'device': self.device, 
-                    'point': self.point,
-                    'value': self.value}
-    return anomaly_dict
+  # def to_dict(self):
+  #   anomaly_dict = {'timestamp': self.timestamp,
+  #                   'rule': self.rule,
+  #                   'name': self.name, 
+  #                   'device': self.device, 
+  #                   'point': self.point,
+  #                   'value': self.value}
+  #   return anomaly_dict
   
   def to_tuple(self):
-    anomaly_tuple = (self.timestamp, self.rule, self.name, self.device, self.point, self.value)
+    anomaly_tuple = (self.start_time, self.end_time, self.rule_id, self.value, self.timeseriesid)
     return anomaly_tuple
   
 @dataclass
 class Rule:
+  rule_id: int
   name: str
-  id: int
+  sensor_type: str
   description: str
-  sensors_required: List[str]
+  condition: Condition
   
   def to_dict(self):
-    dict = {'id': self.id, 
+    rule_dict = {'rule_id': self.rule_id, 
             'name': self.name, 
+            'sensor_type': self.sensor_type,
             'description': self.description, 
-            'sensors': self.sensors_required}
-    return dict
+            'condition': self.condition.to_dict()}
+    return rule_dict
   
 @dataclass
 class PointReading:

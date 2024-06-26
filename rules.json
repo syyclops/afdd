@@ -1,0 +1,15 @@
+[
+   {
+      "id": 1,
+      "name": "CO2 Too High",
+      "sensor_type": "CO2_Sensor",
+      "description": "Triggers when average CO2 level exceeds 1000 ppm for 5 minutes",
+      "condition": {
+         "metric": "average",
+         "threshold": 1000,
+         "operator": ">",
+         "duration": 300,
+         "severity": "high"
+      }
+   }
+]
