@@ -5,7 +5,7 @@ from psycopg import Connection
 import json
 import operator
 
-from afdd.models import PointReading, TimeseriesData, Rule, Anomaly
+from afdd.models import PointReading, TimeseriesData, Rule, Anomaly, Condition
 from afdd.logger import logger
 
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
@@ -41,16 +41,47 @@ def load_rules_json(rules_list: List[dict]):
     json.dump(rules_list, rules, indent=3)
   logger.info('Rules loaded into json.')
   
-def load_rules(conn: Connection, rules_json: str):
+# loads rules into Postgres from a json file
+def load_rules(conn: Connection, rules_json: str) -> None:
   with open(rules_json) as file:
     rules_list = json.load(file)
-  rules_list = [(rule['rule_id'], rule['name'], rule["sensor_type"], rule["description"], json.dumps(rule["condition"])) for rule in rules_list]
-  query = "INSERT INTO rules (rule_id, name, sensor_type, description, condition) VALUES (%s, %s, %s, %s, %s)"
+
+  rules_list = [(rule["rule_id"], rule["name"], rule["sensor_type"], rule["description"], json.dumps(rule["condition"])) for rule in rules_list]
+  for rule in rules_list:
+    with conn.cursor() as cur:
+      id_exists_query = f"SELECT * FROM rules WHERE rule_id = {rule[0]}"
+      cur.execute(id_exists_query)
+      if not cur.fetchall():
+        insert_query = "INSERT INTO rules (rule_id, name, sensor_type, description, condition) VALUES (%s, %s, %s, %s, %s)"
+        cur.execute(insert_query, rule)
+      else:
+        logger.info(f"Rule_id of, {rule}, already exists. ")
+        continue
+      cur.execute('COMMIT')
+
+# Gets the table of rules from Postgres and returns a list of Rule objects
+def get_rules(conn: Connection) -> List[Rule]:
+  query = "SELECT * FROM RULES ;"
+  rule_list = []
   try:
     with conn.cursor() as cur:
-      cur.executemany(query, rules_list)
-      cur.execute('COMMIT')
-      logger.info('Rule successfully loaded. ')
+      cur.execute(query)
+      rows = cur.fetchall()
+      for row in rows:
+        rule_list.append(Rule(
+          rule_id=row[0], 
+          name=row[1], 
+          sensor_type=row[2], 
+          description=row[3], 
+          condition=Condition(
+            metric=row[4]['metric'], 
+            threshold=row[4]['threshold'], 
+            operator=row[4]['operator'], 
+            duration=row[4]['duration'], 
+            severity=row[4]['severity']
+        )))
+      conn.commit()
+      return rule_list
   except Exception as e:
     raise e
 
