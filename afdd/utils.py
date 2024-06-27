@@ -167,17 +167,17 @@ metric_map = {
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules
-def analyze_data(timeseries_data: pd.DataFrame, rules: List[dict], start_time: str, end_time: str) -> List[dict]:
+def analyze_data(timeseries_data: pd.DataFrame, rules: List[Rule], start_time: str, end_time: str) -> List[tuple]:
   anomaly_list = []
   for ts_id, values in timeseries_data.items():
     for rule in rules:
-      func = metric_map[rule['condition']['metric']]
+      func = metric_map[rule.condition.metric]
       sample_data = func(values)
-      threshold = rule["condition"]["threshold"]
+      threshold = rule.condition.threshold
       logger.info(f"{ts_id}:{sample_data}, {threshold}")
-      op = rule["condition"]["operator"]
+      op = rule.condition.operator
       if comparator(op, sample_data, threshold):
-        anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule["rule_id"], value=sample_data, timeseriesid=ts_id)
+        anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule.rule_id, value=sample_data, timeseriesid=ts_id)
         anomaly_list.append(anomaly.to_tuple())
   return anomaly_list
 

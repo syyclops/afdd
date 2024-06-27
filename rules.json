@@ -37,19 +37,5 @@
          "duration": 60,
          "severity": "high"
       }
-   },
-   {
-      "rule_id": 3,
-      "name": "Temperature High",
-      "sensor_type": "Temperature",
-      "description": "Triggers when temperature (f) peaks above 90 degrees within 1 minute",
-      "condition": {
-         "metric": "max",
-         "threshold": 90,
-         "operator": ">",
-         "duration": 60,
-         "severity": "high"
-      }
    }
-   
 ]
