@@ -8,28 +8,15 @@ import psycopg
 import os
 
 from afdd.models import Anomaly, Condition, Rule, Metric, Severity
-from afdd.utils import load_graph, load_timeseries, append_anomalies, load_rules_json, analyze_data, load_rules
+from afdd.utils import load_graph, load_timeseries, append_anomalies, load_rules_json, analyze_data, load_rules, get_rules
 from afdd.rule_functions import co2_too_high
 
 def main():
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
-  
-  # load co2 rule into rules table in postgres
-  co2Rule = Rule(rule_id=1, name="CO2 Too High", 
-                sensor_type="CO2_Sensor", 
-                description="Triggers when average CO2 level exceeds 1000 ppm for 5 minutes",
-                condition=Condition(metric=Metric.AVERAGE, threshold=(1000, 1500), operator="in", duration=300, severity=Severity.HIGH))
 
-  co2Rule2 = Rule(rule_id=2, name="CO2 Critical", 
-                sensor_type="CO2_Sensor", 
-                description="Triggers when average CO2 level exceeds 1500 ppm for 5 minutes",
-                condition=Condition(metric=Metric.AVERAGE, threshold=1500, operator=">", duration=300, severity=Severity.CRITICAL))
-
-  rules_list = [co2Rule.to_dict(), co2Rule2.to_dict()]
-
-  load_rules_json(rules_list=rules_list)
   load_rules(conn=conn, rules_json='rules.json')
+  rules_list = get_rules(conn=conn)
   
   # Load graph data into dataframe
   graph_dataframe = load_graph(devices='kaiterra_example.ttl')

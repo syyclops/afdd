@@ -24,11 +24,11 @@ class Condition():
   severity: Severity
   
   def to_dict(self):
-    condition_dict = {'metric': self.metric.value, 
+    condition_dict = {'metric': self.metric, 
                       'threshold': self.threshold, 
                       'operator': self.operator, 
                       'duration': self.duration,
-                      'severity': self.severity.value}
+                      'severity': self.severity}
     return condition_dict
 
 @dataclass
