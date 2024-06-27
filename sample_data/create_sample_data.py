@@ -22,4 +22,4 @@ def main():
     for id in timeseriesid_temp:
         point_reading_list.append(PointReading(ts=datetime.datetime.now().isoformat(timespec='seconds'), value=random.randint(0, 100), timeseriesid=id))
     insert_timeseries(conn, point_reading_list)
-    time.sleep(60)
+    time.sleep(15)

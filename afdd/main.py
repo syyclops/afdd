@@ -7,40 +7,29 @@ from afdd.logger import logger
 import psycopg
 import os
 
-from afdd.models import Anomaly
-from afdd.models import Rule, TimeseriesData
-from afdd.utils import load_graph, load_timeseries, append_anomalies, load_rules
+from afdd.models import Anomaly, Condition, Rule, Metric, Severity
+from afdd.utils import load_graph, load_timeseries, append_anomalies, load_rules_json, analyze_data, load_rules
 from afdd.rule_functions import co2_too_high
-
-# looping through point readings and checking for anomaly
-# only works for true or false rules
-def analyze_data(ts_data_list: List[TimeseriesData], graphInfoDF: pd.DataFrame, rule: Rule, rule_func) -> List[dict]:
-  anomaly_list = []
-  for i in ts_data_list:
-    data = i['data']  # list of pointReadings
-    for pointReading in data:
-      if rule_func(pointReading.value):
-        anomaly = Anomaly(
-            name=rule.name, 
-            rule=rule.id,
-            timestamp=pointReading.ts, 
-            device=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'device name'].values[0]),  # gets device name based on unique timeseriesid in graphInfoDF
-            point=str(graphInfoDF.loc[graphInfoDF['timeseriesid'] == Literal(pointReading.timeseriesid), 'point'].values[0]),
-            value=pointReading.value
-        )
-        anomaly_list.append(anomaly.to_tuple())  # change to tuple to insert as row in postgres table
-        logger.info(anomaly_list)
-  logger.info('finished going through data')
-  return anomaly_list
 
 def main():
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
   
   # load co2 rule into rules table in postgres
-  co2Rule = Rule(name='CO2 Too High', id=1, description='ppm above 1000', sensors_required=[URIRef("https://brickschema.org/schema/Brick#CO2_Sensor")])
-  rule = [co2Rule]
-  load_rules(conn=conn, rule_list=rule)
+  co2Rule = Rule(rule_id=1, name="CO2 Too High", 
+                sensor_type="CO2_Sensor", 
+                description="Triggers when average CO2 level exceeds 1000 ppm for 5 minutes",
+                condition=Condition(metric=Metric.AVERAGE, threshold=(1000, 1500), operator="in", duration=300, severity=Severity.HIGH))
+
+  co2Rule2 = Rule(rule_id=2, name="CO2 Critical", 
+                sensor_type="CO2_Sensor", 
+                description="Triggers when average CO2 level exceeds 1500 ppm for 5 minutes",
+                condition=Condition(metric=Metric.AVERAGE, threshold=1500, operator=">", duration=300, severity=Severity.CRITICAL))
+
+  rules_list = [co2Rule.to_dict(), co2Rule2.to_dict()]
+
+  load_rules_json(rules_list=rules_list)
+  load_rules(conn=conn, rules_json='rules.json')
   
   # Load graph data into dataframe
   graph_dataframe = load_graph(devices='kaiterra_example.ttl')
@@ -49,24 +38,23 @@ def main():
   # running anomaly detect every 30 minutes
   while True:
     end_time = datetime.datetime.now()
-    start_time = end_time - datetime.timedelta(minutes=5)
+    start_time = end_time - datetime.timedelta(minutes=1)
     end_time = end_time.isoformat(timespec='seconds')
     start_time = start_time.isoformat(timespec='seconds')
     logger.info(f'start time: {start_time} \nend time: {end_time}')
     brick_class_co2 = "https://brickschema.org/schema/Brick#CO2_Sensor"
 
     # load timeseries data for co2 sensors
-    co2_list = load_timeseries(conn=conn, graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
-    logger.info(co2_list)
-    print(co2_list)
+    co2_df = load_timeseries(conn=conn, graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
+
     # find anomalies in said data and put in list of tuples
-    anomaly_list = analyze_data(ts_data_list=co2_list, graphInfoDF=graph_dataframe, rule=co2Rule, rule_func=co2_too_high)
+    anomaly_list = analyze_data(timeseries_data=co2_df, rules=rules_list, start_time=start_time, end_time=end_time)
     logger.info('analyzing done')
 
     # append anomalies to anomalies table in postgres
     append_anomalies(conn, anomaly_list)
 
-    time.sleep(300)
+    time.sleep(60)
 
 if __name__ == '__main__':
   main()

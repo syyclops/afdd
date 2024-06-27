@@ -2,8 +2,10 @@ from rdflib import Graph, URIRef
 from typing import List
 import pandas as pd
 from psycopg import Connection
+import json
+import operator
 
-from afdd.models import PointReading, TimeseriesData, Rule
+from afdd.models import PointReading, TimeseriesData, Rule, Anomaly
 from afdd.logger import logger
 
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
@@ -26,20 +28,27 @@ def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
     raise e
   
 def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
-  query = "INSERT INTO anomalies (ts, rule, name, device, point, value) VALUES (%s, %s, %s, %s, %s, %s)"
+  query = "INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid) VALUES (%s, %s, %s, %s, %s)"
   try:
     with conn.cursor() as cur:
       cur.executemany(query, anomaly_list)
       conn.commit()
   except Exception as e:
     raise e
+
+def load_rules_json(rules_list: List[dict]):
+  with open('rules.json', 'w') as rules:
+    json.dump(rules_list, rules, indent=3)
+  logger.info('Rules loaded into json.')
   
-def load_rules(conn: Connection, rule_list: List[Rule]):
-  rule_list = [(rule.id, rule.name, rule.description, rule.sensors_required) for rule in rule_list]
-  query = "INSERT INTO rules (id, name, description, sensors) VALUES (%s, %s, %s, %s)"
+def load_rules(conn: Connection, rules_json: str):
+  with open(rules_json) as file:
+    rules_list = json.load(file)
+  rules_list = [(rule['rule_id'], rule['name'], rule["sensor_type"], rule["description"], json.dumps(rule["condition"])) for rule in rules_list]
+  query = "INSERT INTO rules (rule_id, name, sensor_type, description, condition) VALUES (%s, %s, %s, %s, %s)"
   try:
     with conn.cursor() as cur:
-      cur.executemany(query, rule_list)
+      cur.executemany(query, rules_list)
       cur.execute('COMMIT')
       logger.info('Rule successfully loaded. ')
   except Exception as e:
@@ -88,7 +97,7 @@ def load_graph(devices: str) -> pd.DataFrame:
 
   return graphInfoDF
 
-def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> List[TimeseriesData]:
+def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> pd.DataFrame:
   # gets all of the timeseriesids that correspond to the given brick class
   timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
 
@@ -99,7 +108,7 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   placeholders = ', '.join(['%s' for _ in timeseries_ids])
 
   query = f"""
-    SELECT ts, value, timeseriesid 
+    SELECT value, timeseriesid
     FROM timeseries
     WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
     ORDER BY ts ASC
@@ -108,10 +117,53 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   with conn.cursor() as cur:
     cur.execute(query, timeseries_ids + [start_time, end_time])
     rows = cur.fetchall()
-    result: List[TimeseriesData] = []
+    dict = {}
     for id in timeseries_ids:
-      data = [PointReading(ts=row[0].isoformat(), value=row[1], timeseriesid=row[2]) for row in rows if row[2] == id]
-      result.append(TimeseriesData(data=data, timeseriesid=id))
+      data = [row[0] for row in rows if row[1] == id]
+      dict[id] = data
+    
+    result = pd.DataFrame(dict)
     conn.commit()
+    logger.info(result)
 
   return result
+
+metric_map = {
+  "average": pd.Series.mean,
+  "min": pd.Series.min,
+  "max": pd.Series.max
+}
+
+# looping through point readings and checking for anomaly
+# only works for true or false rules
+def analyze_data(timeseries_data: pd.DataFrame, rules: List[dict], start_time: str, end_time: str) -> List[dict]:
+  anomaly_list = []
+  for ts_id, values in timeseries_data.items():
+    for rule in rules:
+      func = metric_map[rule['condition']['metric']]
+      sample_data = func(values)
+      threshold = rule["condition"]["threshold"]
+      logger.info(f"{ts_id}:{sample_data}, {threshold}")
+      op = rule["condition"]["operator"]
+      if comparator(op, sample_data, threshold):
+        anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule["rule_id"], value=sample_data, timeseriesid=ts_id)
+        anomaly_list.append(anomaly.to_tuple())
+  return anomaly_list
+
+def in_range(sample, range_tuple):
+  if sample in range(range_tuple[0], range_tuple[1]):
+    return True
+  else:
+    return False
+  
+
+symbol_map = {
+    '>': operator.gt,
+    '>=': operator.ge,
+    '<': operator.lt, 
+    '<=': operator.le,
+    'in': in_range
+    }
+
+def comparator(op, sample, threshold):
+    return symbol_map[op](sample, threshold)
