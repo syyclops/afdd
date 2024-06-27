@@ -3,4 +3,11 @@ repo_url: https://github.com/syyclops/afdd
 nav:
   - Home: index.md
   - Models: models.md
-  
+  - Logic: logic.md
+
+theme:
+  name: material
+  favicon: images/black_eye.png
+  logo: images/logo192.png
+  palette:
+    primary: black

@@ -38,15 +38,6 @@ class Anomaly:
   rule_id: int
   value: float
   timeseriesid: str
-
-  # def to_dict(self):
-  #   anomaly_dict = {'timestamp': self.timestamp,
-  #                   'rule': self.rule,
-  #                   'name': self.name, 
-  #                   'device': self.device, 
-  #                   'point': self.point,
-  #                   'value': self.value}
-  #   return anomaly_dict
   
   def to_tuple(self):
     anomaly_tuple = (self.start_time, self.end_time, self.rule_id, self.value, self.timeseriesid)
