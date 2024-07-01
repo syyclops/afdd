@@ -3,3 +3,4 @@ venv/
 __pycache__/
 logs/
 tests/test_loading.py
+/afdd/scratch.py

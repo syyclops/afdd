@@ -139,7 +139,7 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   placeholders = ', '.join(['%s' for _ in timeseries_ids])
 
   query = f"""
-    SELECT value, timeseriesid
+    SELECT ts, value, timeseriesid
     FROM timeseries
     WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
     ORDER BY ts ASC
@@ -148,16 +148,22 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   with conn.cursor() as cur:
     cur.execute(query, timeseries_ids + [start_time, end_time])
     rows = cur.fetchall()
-    dict = {}
-    for id in timeseries_ids:
-      data = [row[0] for row in rows if row[1] == id]
-      dict[id] = data
     
-    result = pd.DataFrame(dict)
-    conn.commit()
-    logger.info(result)
+    # make a dataframe out of the query results
+    df = pd.DataFrame(rows, columns=["ts", "value", "timeseriesid"])
+    logger.info(df)
 
-  return result
+    # convert the ts column to datetimes
+    df['ts'] = pd.to_datetime(df['ts'])
+
+    # pivot the df to have ts as the index, timeseriesid as the columns and value as the values
+    df_pivoted = df.pivot(index='ts', columns='timeseriesid', values='value')
+    df_pivoted = df_pivoted.sort_index()
+
+    conn.commit()
+    logger.info(df_pivoted)
+
+  return df_pivoted
 
 metric_map = {
   "average": pd.Series.mean,
