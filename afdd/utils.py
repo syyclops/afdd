@@ -1,11 +1,12 @@
 from rdflib import Graph, URIRef 
 from typing import List
+import datetime
 import pandas as pd
 from psycopg import Connection
 import json
 import operator
 
-from afdd.models import PointReading, TimeseriesData, Rule, Anomaly, Condition
+from afdd.models import PointReading, TimeseriesData, Rule, Anomaly, Condition, Metric
 from afdd.logger import logger
 
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
@@ -165,34 +166,18 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
 
   return df_pivoted
 
+# normal comparison helpers
 metric_map = {
   "average": pd.Series.mean,
   "min": pd.Series.min,
   "max": pd.Series.max
 }
 
-# looping through point readings and checking for anomaly
-# only works for true or false rules
-def analyze_data(timeseries_data: pd.DataFrame, rules: List[Rule], start_time: str, end_time: str) -> List[tuple]:
-  anomaly_list = []
-  for ts_id, values in timeseries_data.items():
-    for rule in rules:
-      func = metric_map[rule.condition.metric]
-      sample_data = func(values)
-      threshold = rule.condition.threshold
-      logger.info(f"{ts_id}:{sample_data}, {threshold}")
-      op = rule.condition.operator
-      if comparator(op, sample_data, threshold):
-        anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule.rule_id, value=sample_data, timeseriesid=ts_id)
-        anomaly_list.append(anomaly.to_tuple())
-  return anomaly_list
-
 def in_range(sample, range_tuple):
   if sample in range(range_tuple[0], range_tuple[1]):
     return True
   else:
     return False
-  
 
 symbol_map = {
     '>': operator.gt,
@@ -203,4 +188,62 @@ symbol_map = {
     }
 
 def comparator(op, sample, threshold):
-    return symbol_map[op](sample, threshold)
+  return symbol_map[op](sample, threshold)
+
+# series comparison helpers
+def series_in_range(data, threshold: tuple):
+  return data.between(threshold[0], threshold[1])
+
+series_symbol_map = {
+    '>': pd.Series.gt,
+    '>=': pd.Series.ge,
+    '<': pd.Series.lt, 
+    '<=': pd.Series.le,
+    'in': series_in_range
+    }
+
+def series_comparator(op, data, threshold):
+  return series_symbol_map[op](data, threshold)
+
+# looping through point readings and checking for anomaly
+# only works for true or false rules
+def analyze_data(timeseries_data: pd.DataFrame, rules: List[Rule]) -> List[tuple]:
+
+  anomaly_list = []
+  for rule in rules:
+    if rule.condition.metric == "average":
+      resample_size = 30
+      op = rule.condition.operator
+      duration = rule.condition.duration
+      throwaway_ts = pd.to_datetime(timeseries_data.first_valid_index()) + datetime.timedelta(int((duration / resample_size - 1) * resample_size)) # gets rid of the first few values of our table that aren't full windows
+
+      # resample our data to 30s and compute the rolling mean
+      rolling_mean = timeseries_data.resample('30s').mean()
+      rolling_mean = rolling_mean.rolling(window=f'{duration}s').mean()[throwaway_ts::]
+      print(rolling_mean)
+
+      for id in rolling_mean.columns:
+        # compare the rolling means to the rule's condition
+        rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
+        # put all of the trues (anomalies found) into a series
+        anomaly_df = rolling_mean[id].loc[rolling_mean["results"] == True]
+        print(anomaly_df)
+
+        # go through the series of anomalies and add them to the list
+        for index, row in anomaly_df.items():
+          anomaly = Anomaly(start_time= index-datetime.timedelta(seconds=duration), end_time=index, rule_id=rule.rule_id, value=row, timeseriesid=id)
+          anomaly_list.append(anomaly.to_tuple())
+  
+  print(anomaly_list)
+  return anomaly_list
+        
+    # else:
+    #   # TODO: figure out if we can do min/max a similar way to the rolling average
+    #   func = metric_map[rule.condition.metric]
+    #   sample_data = func(values)
+    #   threshold = rule.condition.threshold
+    #   logger.info(f"{ts_id}:{sample_data}, {threshold}")
+    #   op = rule.condition.operator
+    #   if comparator(op, sample_data, threshold):
+    #     anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule.rule_id, value=sample_data, timeseriesid=ts_id)
+    #     anomaly_list.append(anomaly.to_tuple())

@@ -3,7 +3,7 @@
       "rule_id": 1,
       "name": "CO2 High",
       "sensor_type": "CO2_Sensor",
-      "description": "Triggers when average CO2 level exceeds 1000 ppm for 1 minutes",
+      "description": "Triggers when average CO2 level exceeds 1000 ppm for 1 minute",
       "condition": {
          "metric": "average",
          "threshold": [1000, 1500],
@@ -16,20 +16,7 @@
       "rule_id": 2,
       "name": "CO2 Critical",
       "sensor_type": "CO2_Sensor",
-      "description": "Triggers when average CO2 level exceeds 1500 ppm for 1 minutes",
-      "condition": {
-         "metric": "average",
-         "threshold": 1500,
-         "operator": ">",
-         "duration": 60,
-         "severity": "high"
-      }
-   },
-   {
-      "rule_id": 2,
-      "name": "CO2 Critical",
-      "sensor_type": "CO2_Sensor",
-      "description": "Triggers when average CO2 level exceeds 1500 ppm for 1 minutes",
+      "description": "Triggers when average CO2 level exceeds 1500 ppm for 1 minute",
       "condition": {
          "metric": "average",
          "threshold": 1500,

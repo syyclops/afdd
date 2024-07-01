@@ -35,7 +35,7 @@ def main():
     co2_df = load_timeseries(conn=conn, graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
 
     # find anomalies in said data and put in list of tuples
-    anomaly_list = analyze_data(timeseries_data=co2_df, rules=rules_list, start_time=start_time, end_time=end_time)
+    anomaly_list = analyze_data(timeseries_data=co2_df, rules=rules_list)
     logger.info('analyzing done')
 
     # append anomalies to anomalies table in postgres
