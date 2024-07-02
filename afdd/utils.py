@@ -29,6 +29,7 @@ def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
     raise e
   
 def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
+  """ Inserts a list of anomalies into postgres """
   query = "INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid) VALUES (%s, %s, %s, %s, %s)"
   try:
     with conn.cursor() as cur:
@@ -42,8 +43,8 @@ def load_rules_json(rules_list: List[dict]):
     json.dump(rules_list, rules, indent=3)
   logger.info('Rules loaded into json.')
   
-# loads rules into Postgres from a json file
 def load_rules(conn: Connection, rules_json: str) -> None:
+  """ Loads rules into Postgres from a json file """
   with open(rules_json) as file:
     rules_list = json.load(file)
 
@@ -60,8 +61,8 @@ def load_rules(conn: Connection, rules_json: str) -> None:
         continue
       cur.execute('COMMIT')
 
-# Gets the table of rules from Postgres and returns a list of Rule objects
 def get_rules(conn: Connection) -> List[Rule]:
+  """ Gets the table of rules from Postgres and returns a list of Rule objects """
   query = "SELECT * FROM RULES ;"
   rule_list = []
   try:
@@ -88,7 +89,7 @@ def get_rules(conn: Connection) -> List[Rule]:
     raise e
 
 def load_graph(devices: str) -> pd.DataFrame:
-# Load our sample devices and points, takes in .ttl file of device info
+  """ Load our sample devices and points, takes in .ttl file of device info """
   g = Graph()
 
   g.parse(devices, format="ttl")
@@ -131,6 +132,10 @@ def load_graph(devices: str) -> pd.DataFrame:
   return graphInfoDF
 
 def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> pd.DataFrame:
+  """
+  Creates a dataframe containing the timeseries data that corresponds to the given start/end time and brick class.
+  Timestamp is the index, the columns contain the data of each timeseriesid.
+  """
   # gets all of the timeseriesids that correspond to the given brick class
   timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
 
@@ -192,13 +197,16 @@ def series_comparator(op, data, threshold):
 # looping through point readings and checking for anomaly
 # only works for true or false rules
 def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
+  """
+  Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
+  """
   anomaly_list = []
   if rule.condition.metric == "average":
-    resample_size = 15
+    resample_size = 15 # increment size of the rolling average (how far it's going to roll each time)
     op = rule.condition.operator
     duration = rule.condition.duration
 
-    # resample our data to 30s and compute the rolling mean
+    # resample our data to "resample_size" and compute the rolling mean
     rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
     logger.info(f"resampled data: {rolling_mean}")
     throwaway_ts = pd.to_datetime(rolling_mean.first_valid_index()) + datetime.timedelta(seconds = int((duration / resample_size - 1) * resample_size)) # gets rid of the first few values of our table that aren't full windows

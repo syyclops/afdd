@@ -13,6 +13,7 @@ from afdd.models import Rule
 from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph
 
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
+  """ Evaluates a rule against its threshold """
   while True:
     start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time)
     end_time = datetime.datetime.now()
@@ -23,6 +24,7 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
     await asyncio.sleep(rule.condition.sleep_time)
 
 async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Rule]):
+  """ Creates a start_rule() coroutine object for each rule in the rules_list """
   coro_list = []
   for rule in rules_list:
     coro_list.append(start_rule(conn=conn, graphInfoDF=graphInfoDF, rule=rule))
@@ -32,6 +34,7 @@ def main():
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
 
+  # Loads rules.json into postgres then gets rules from postgres
   load_rules(conn=conn, rules_json='rules.json')
   rules_list = get_rules(conn=conn)
   
