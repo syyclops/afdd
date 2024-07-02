@@ -1,11 +1,12 @@
 from rdflib import Graph, URIRef 
 from typing import List
+import datetime
 import pandas as pd
 from psycopg import Connection
 import json
 import operator
 
-from afdd.models import PointReading, TimeseriesData, Rule, Anomaly, Condition
+from afdd.models import PointReading, Rule, Anomaly, Condition, Metric, Severity
 from afdd.logger import logger
 
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
@@ -28,6 +29,7 @@ def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
     raise e
   
 def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
+  """ Inserts a list of anomalies into postgres """
   query = "INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid) VALUES (%s, %s, %s, %s, %s)"
   try:
     with conn.cursor() as cur:
@@ -41,8 +43,8 @@ def load_rules_json(rules_list: List[dict]):
     json.dump(rules_list, rules, indent=3)
   logger.info('Rules loaded into json.')
   
-# loads rules into Postgres from a json file
 def load_rules(conn: Connection, rules_json: str) -> None:
+  """ Loads rules into Postgres from a json file """
   with open(rules_json) as file:
     rules_list = json.load(file)
 
@@ -59,8 +61,8 @@ def load_rules(conn: Connection, rules_json: str) -> None:
         continue
       cur.execute('COMMIT')
 
-# Gets the table of rules from Postgres and returns a list of Rule objects
 def get_rules(conn: Connection) -> List[Rule]:
+  """ Gets the table of rules from Postgres and returns a list of Rule objects """
   query = "SELECT * FROM RULES ;"
   rule_list = []
   try:
@@ -74,11 +76,12 @@ def get_rules(conn: Connection) -> List[Rule]:
           sensor_type=row[2], 
           description=row[3], 
           condition=Condition(
-            metric=row[4]['metric'], 
+            metric=Metric[row[4]['metric'].upper()], 
             threshold=row[4]['threshold'], 
             operator=row[4]['operator'], 
             duration=row[4]['duration'], 
-            severity=row[4]['severity']
+            sleep_time=row[4]['sleep_time'],
+            severity=Severity[row[4]['severity'].upper()]
         )))
       conn.commit()
       return rule_list
@@ -86,7 +89,7 @@ def get_rules(conn: Connection) -> List[Rule]:
     raise e
 
 def load_graph(devices: str) -> pd.DataFrame:
-# Load our sample devices and points, takes in .ttl file of device info
+  """ Load our sample devices and points, takes in .ttl file of device info """
   g = Graph()
 
   g.parse(devices, format="ttl")
@@ -129,6 +132,10 @@ def load_graph(devices: str) -> pd.DataFrame:
   return graphInfoDF
 
 def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> pd.DataFrame:
+  """
+  Creates a dataframe containing the timeseries data that corresponds to the given start/end time and brick class.
+  Timestamp is the index, the columns contain the data of each timeseriesid.
+  """
   # gets all of the timeseriesids that correspond to the given brick class
   timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
 
@@ -139,7 +146,7 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   placeholders = ', '.join(['%s' for _ in timeseries_ids])
 
   query = f"""
-    SELECT value, timeseriesid
+    SELECT ts, value, timeseriesid
     FROM timeseries
     WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
     ORDER BY ts ASC
@@ -148,53 +155,85 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   with conn.cursor() as cur:
     cur.execute(query, timeseries_ids + [start_time, end_time])
     rows = cur.fetchall()
-    dict = {}
-    for id in timeseries_ids:
-      data = [row[0] for row in rows if row[1] == id]
-      dict[id] = data
     
-    result = pd.DataFrame(dict)
+    # make a dataframe out of the query results
+    df = pd.DataFrame(rows, columns=["ts", "value", "timeseriesid"])
+    logger.info(df)
+
+    # convert the ts column to datetimes
+    df['ts'] = pd.to_datetime(df['ts'])
+
+    # pivot the df to have ts as the index, timeseriesid as the columns and value as the values
+    df_pivoted = df.pivot(index='ts', columns='timeseriesid', values='value')
+    df_pivoted = df_pivoted.sort_index()
+
     conn.commit()
-    logger.info(result)
+    logger.info(df_pivoted)
 
-  return result
+  return df_pivoted
 
-metric_map = {
-  "average": pd.Series.mean,
-  "min": pd.Series.min,
-  "max": pd.Series.max
-}
+# normal comparison helpers
+# metric_map = {
+#   "average": pd.Series.mean,
+#   "min": pd.Series.min,
+#   "max": pd.Series.max
+# }
+
+# series comparison helpers
+def series_in_range(data, threshold: tuple):
+  return data.between(threshold[0], threshold[1])
+
+series_symbol_map = {
+    '>': pd.Series.gt,
+    '>=': pd.Series.ge,
+    '<': pd.Series.lt, 
+    '<=': pd.Series.le,
+    'in': series_in_range
+    }
+
+def series_comparator(op, data, threshold):
+  return series_symbol_map[op](data, threshold)
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules
-def analyze_data(timeseries_data: pd.DataFrame, rules: List[Rule], start_time: str, end_time: str) -> List[tuple]:
+def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
+  """
+  Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
+  """
   anomaly_list = []
-  for ts_id, values in timeseries_data.items():
-    for rule in rules:
-      func = metric_map[rule.condition.metric]
-      sample_data = func(values)
-      threshold = rule.condition.threshold
-      logger.info(f"{ts_id}:{sample_data}, {threshold}")
-      op = rule.condition.operator
-      if comparator(op, sample_data, threshold):
-        anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule.rule_id, value=sample_data, timeseriesid=ts_id)
+  if rule.condition.metric == Metric.AVERAGE:
+    resample_size = 15 # increment size of the rolling average (how far it's going to roll each time)
+    op = rule.condition.operator
+    duration = rule.condition.duration
+
+    # resample our data to "resample_size" and compute the rolling mean
+    rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
+    logger.info(f"resampled data: {rolling_mean}")
+    throwaway_ts = pd.to_datetime(rolling_mean.first_valid_index()) + datetime.timedelta(seconds = int((duration / resample_size - 1) * resample_size)) # gets rid of the first few values of our table that aren't full windows
+    rolling_mean = rolling_mean.rolling(window=f'{duration}s').mean()[throwaway_ts::]
+    logger.info(f"DF after rolling_mean: {rolling_mean}")
+
+    for id in rolling_mean.columns:
+      # compare the rolling means to the rule's condition
+      rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
+      # put all of the trues (anomalies found) into a series
+      anomaly_series = rolling_mean[id].loc[rolling_mean["results"] == True]
+
+      # go through the series of anomalies and add them to the list
+      for index, row in anomaly_series.items():
+        anomaly = Anomaly(start_time= index-datetime.timedelta(seconds=duration), end_time=index, rule_id=rule.rule_id, value=row, timeseriesid=id)
         anomaly_list.append(anomaly.to_tuple())
-  return anomaly_list
-
-def in_range(sample, range_tuple):
-  if sample in range(range_tuple[0], range_tuple[1]):
-    return True
-  else:
-    return False
   
-
-symbol_map = {
-    '>': operator.gt,
-    '>=': operator.ge,
-    '<': operator.lt, 
-    '<=': operator.le,
-    'in': in_range
-    }
-
-def comparator(op, sample, threshold):
-    return symbol_map[op](sample, threshold)
+  logger.info(f"anomaly list: {anomaly_list}")
+  return anomaly_list
+        
+    # else:
+    #   # TODO: figure out if we can do min/max a similar way to the rolling average
+    #   func = metric_map[rule.condition.metric]
+    #   sample_data = func(values)
+    #   threshold = rule.condition.threshold
+    #   logger.info(f"{ts_id}:{sample_data}, {threshold}")
+    #   op = rule.condition.operator
+    #   if comparator(op, sample_data, threshold):
+    #     anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule.rule_id, value=sample_data, timeseriesid=ts_id)
+    #     anomaly_list.append(anomaly.to_tuple())

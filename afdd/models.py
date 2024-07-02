@@ -20,7 +20,8 @@ class Condition():
   metric: Metric
   threshold: int | tuple
   operator: str
-  duration: int
+  duration: int # in seconds
+  sleep_time: int # in seconds
   severity: Severity
   
   def to_dict(self):
@@ -28,6 +29,7 @@ class Condition():
                       'threshold': self.threshold, 
                       'operator': self.operator, 
                       'duration': self.duration,
+                      'sleep_time': self.sleep_time,
                       'severity': self.severity}
     return condition_dict
 
