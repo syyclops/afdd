@@ -217,10 +217,10 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
       # compare the rolling means to the rule's condition
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
       # put all of the trues (anomalies found) into a series
-      anomaly_df = rolling_mean[id].loc[rolling_mean["results"] == True]
+      anomaly_series = rolling_mean[id].loc[rolling_mean["results"] == True]
 
       # go through the series of anomalies and add them to the list
-      for index, row in anomaly_df.items():
+      for index, row in anomaly_series.items():
         anomaly = Anomaly(start_time= index-datetime.timedelta(seconds=duration), end_time=index, rule_id=rule.rule_id, value=row, timeseriesid=id)
         anomaly_list.append(anomaly.to_tuple())
   
