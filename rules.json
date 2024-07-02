@@ -9,6 +9,7 @@
          "threshold": [1000, 1500],
          "operator": "in",
          "duration": 60,
+         "sleep_time": 120,
          "severity": "high"
       }
    }, 
@@ -22,6 +23,7 @@
          "threshold": 1500,
          "operator": ">",
          "duration": 60,
+         "sleep_time": 120,
          "severity": "high"
       }
    }

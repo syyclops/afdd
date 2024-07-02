@@ -5,11 +5,28 @@ import time
 import datetime
 from afdd.logger import logger
 import psycopg
+from psycopg import Connection
 import os
+import asyncio
 
-from afdd.models import Anomaly, Condition, Rule, Metric, Severity
-from afdd.utils import load_graph, load_timeseries, append_anomalies, load_rules_json, analyze_data, load_rules, get_rules
-from afdd.rule_functions import co2_too_high
+from afdd.models import Rule
+from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph
+
+async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
+  while True:
+    start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time)
+    end_time = datetime.datetime.now()
+    sensor = f"https://brickschema.org/schema/Brick#{rule.sensor_type}"
+    timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
+    anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule)
+    append_anomalies(conn=conn, anomaly_list=anomaly_list)
+    await asyncio.sleep(rule.condition.sleep_time)
+
+async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Rule]):
+  coro_list = []
+  for rule in rules_list:
+    coro_list.append(start_rule(conn=conn, graphInfoDF=graphInfoDF, rule=rule))
+  await asyncio.gather(*coro_list)
 
 def main():
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
@@ -22,26 +39,8 @@ def main():
   graph_dataframe = load_graph(devices='kaiterra_example.ttl')
   logger.info(graph_dataframe)
 
-  # running anomaly detect every 30 minutes
-  while True:
-    end_time = datetime.datetime.now()
-    start_time = end_time - datetime.timedelta(minutes=1)
-    end_time = end_time.isoformat(timespec='seconds')
-    start_time = start_time.isoformat(timespec='seconds')
-    logger.info(f'start time: {start_time} \nend time: {end_time}')
-    brick_class_co2 = "https://brickschema.org/schema/Brick#CO2_Sensor"
-
-    # load timeseries data for co2 sensors
-    co2_df = load_timeseries(conn=conn, graphInfoDF=graph_dataframe, start_time=start_time, end_time=end_time, brick_class=brick_class_co2)
-
-    # find anomalies in said data and put in list of tuples
-    anomaly_list = analyze_data(timeseries_data=co2_df, rules=rules_list)
-    logger.info('analyzing done')
-
-    # append anomalies to anomalies table in postgres
-    append_anomalies(conn, anomaly_list)
-
-    time.sleep(60)
+  # running anomaly detect in sleep time cycle
+  asyncio.run(start(conn=conn, graphInfoDF=graph_dataframe, rules_list=rules_list))
 
 if __name__ == '__main__':
   main()

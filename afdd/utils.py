@@ -79,6 +79,7 @@ def get_rules(conn: Connection) -> List[Rule]:
             threshold=row[4]['threshold'], 
             operator=row[4]['operator'], 
             duration=row[4]['duration'], 
+            sleep_time=row[4]['sleep_time'],
             severity=row[4]['severity']
         )))
       conn.commit()
@@ -167,28 +168,11 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   return df_pivoted
 
 # normal comparison helpers
-metric_map = {
-  "average": pd.Series.mean,
-  "min": pd.Series.min,
-  "max": pd.Series.max
-}
-
-def in_range(sample, range_tuple):
-  if sample in range(range_tuple[0], range_tuple[1]):
-    return True
-  else:
-    return False
-
-symbol_map = {
-    '>': operator.gt,
-    '>=': operator.ge,
-    '<': operator.lt, 
-    '<=': operator.le,
-    'in': in_range
-    }
-
-def comparator(op, sample, threshold):
-  return symbol_map[op](sample, threshold)
+# metric_map = {
+#   "average": pd.Series.mean,
+#   "min": pd.Series.min,
+#   "max": pd.Series.max
+# }
 
 # series comparison helpers
 def series_in_range(data, threshold: tuple):
@@ -207,34 +191,32 @@ def series_comparator(op, data, threshold):
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules
-def analyze_data(timeseries_data: pd.DataFrame, rules: List[Rule]) -> List[tuple]:
-
+def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
   anomaly_list = []
-  for rule in rules:
-    if rule.condition.metric == "average":
-      resample_size = 30
-      op = rule.condition.operator
-      duration = rule.condition.duration
-      throwaway_ts = pd.to_datetime(timeseries_data.first_valid_index()) + datetime.timedelta(int((duration / resample_size - 1) * resample_size)) # gets rid of the first few values of our table that aren't full windows
+  if rule.condition.metric == "average":
+    resample_size = 15
+    op = rule.condition.operator
+    duration = rule.condition.duration
 
-      # resample our data to 30s and compute the rolling mean
-      rolling_mean = timeseries_data.resample('30s').mean()
-      rolling_mean = rolling_mean.rolling(window=f'{duration}s').mean()[throwaway_ts::]
-      print(rolling_mean)
+    # resample our data to 30s and compute the rolling mean
+    rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
+    logger.info(f"resampled data: {rolling_mean}")
+    throwaway_ts = pd.to_datetime(rolling_mean.first_valid_index()) + datetime.timedelta(seconds = int((duration / resample_size - 1) * resample_size)) # gets rid of the first few values of our table that aren't full windows
+    rolling_mean = rolling_mean.rolling(window=f'{duration}s').mean()[throwaway_ts::]
+    logger.info(f"DF after rolling_mean: {rolling_mean}")
 
-      for id in rolling_mean.columns:
-        # compare the rolling means to the rule's condition
-        rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
-        # put all of the trues (anomalies found) into a series
-        anomaly_df = rolling_mean[id].loc[rolling_mean["results"] == True]
-        print(anomaly_df)
+    for id in rolling_mean.columns:
+      # compare the rolling means to the rule's condition
+      rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
+      # put all of the trues (anomalies found) into a series
+      anomaly_df = rolling_mean[id].loc[rolling_mean["results"] == True]
 
-        # go through the series of anomalies and add them to the list
-        for index, row in anomaly_df.items():
-          anomaly = Anomaly(start_time= index-datetime.timedelta(seconds=duration), end_time=index, rule_id=rule.rule_id, value=row, timeseriesid=id)
-          anomaly_list.append(anomaly.to_tuple())
+      # go through the series of anomalies and add them to the list
+      for index, row in anomaly_df.items():
+        anomaly = Anomaly(start_time= index-datetime.timedelta(seconds=duration), end_time=index, rule_id=rule.rule_id, value=row, timeseriesid=id)
+        anomaly_list.append(anomaly.to_tuple())
   
-  print(anomaly_list)
+  logger.info(f"anomaly list: {anomaly_list}")
   return anomaly_list
         
     # else:
