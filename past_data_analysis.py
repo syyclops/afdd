@@ -3,23 +3,20 @@ import argparse
 from typing import List
 from afdd.utils import * 
 from afdd.models import *
+from rdflib import Graph
 import psycopg
 import os
 import json
 
-def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id: int):
+def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id: int, graph: Graph):
   """
   Creates a json file with all anomalies that happened between start and end time for a specified rule.
   """
-  graph = load_graph(devices="kaiterra_example.ttl")
-  
   # get full rule from rules table in postgres by rule_id
-  query = f"""SELECT rule_id, name, sensor_type, description, condition
-  FROM rules
-  WHERE rule_id={rule_id}"""
+  query = """SELECT rule_id, name, sensor_type, description, condition FROM rules WHERE rule_id=%s"""
 
   with conn.cursor() as cur:
-    cur.execute(query)
+    cur.execute(query, (rule_id,))
     result = cur.fetchall()
     result = result[0]
     print(result)
@@ -30,12 +27,12 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
     sensor_type=result[2], 
     description=result[3], 
     condition=Condition(
-      metric=result[4]['metric'], 
+      metric=Metric[result[4]['metric'].upper()], 
       threshold=result[4]['threshold'], 
       operator=result[4]['operator'], 
       duration=result[4]['duration'], 
       sleep_time=result[4]['sleep_time'],
-      severity=result[4]['severity']))
+      severity=Severity[result[4]['severity'].upper()]))
 
   brick_class = f"https://brickschema.org/schema/Brick#{rule_object.sensor_type}"
   timeseries_df = load_timeseries(conn=conn, graphInfoDF=graph, start_time=start_time, end_time=end_time, brick_class=brick_class)
@@ -69,12 +66,15 @@ def main():
   parser.add_argument("--start_time", required=True, help="start time in iso format")
   parser.add_argument("--end_time", required=True, help="end time in iso format")
   parser.add_argument("--rule_id", required=True, help="id of desired rule to be run")
+  parser.add_argument("--graph", required=True, help="name of ttl file containing points graph")
   args = parser.parse_args()
 
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
 
-  name = analyze_past_data(conn=conn, start_time=args.start_time, end_time=args.end_time, rule_id=args.rule_id)
+  graph = load_graph(args.graph)
+
+  name = analyze_past_data(conn=conn, start_time=args.start_time, end_time=args.end_time, rule_id=args.rule_id, graph=graph)
   print(name)
 
 if __name__ == "__main__":

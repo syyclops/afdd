@@ -6,7 +6,7 @@ from psycopg import Connection
 import json
 import operator
 
-from afdd.models import PointReading, TimeseriesData, Rule, Anomaly, Condition, Metric
+from afdd.models import PointReading, Rule, Anomaly, Condition, Metric, Severity
 from afdd.logger import logger
 
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
@@ -76,12 +76,12 @@ def get_rules(conn: Connection) -> List[Rule]:
           sensor_type=row[2], 
           description=row[3], 
           condition=Condition(
-            metric=row[4]['metric'], 
+            metric=Metric[row[4]['metric'].upper()], 
             threshold=row[4]['threshold'], 
             operator=row[4]['operator'], 
             duration=row[4]['duration'], 
             sleep_time=row[4]['sleep_time'],
-            severity=row[4]['severity']
+            severity=Severity[row[4]['severity'].upper()]
         )))
       conn.commit()
       return rule_list
@@ -201,7 +201,7 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
   Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
   """
   anomaly_list = []
-  if rule.condition.metric == "average":
+  if rule.condition.metric == Metric.AVERAGE:
     resample_size = 15 # increment size of the rolling average (how far it's going to roll each time)
     op = rule.condition.operator
     duration = rule.condition.duration
