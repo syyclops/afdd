@@ -21,13 +21,13 @@ async def append_co2(ids, time):
   while True:
     point_reading_list = []
     for id in ids:
-      point_reading_list.append(PointReading(ts=datetime.datetime.now().isoformat(timespec='seconds'), value=random.randint(0, 2000), timeseriesid=id))
+      point_reading_list.append(PointReading(ts=datetime.datetime.now().isoformat(timespec='seconds'), value=random.randint(800, 1500), timeseriesid=id))
     insert_timeseries(conn, point_reading_list)
     logging.info(f"successfully appended at {datetime.datetime.now()} for the {time} second loop")
     await asyncio.sleep(time)
 
 async def start():
-  await asyncio.gather(append_co2(timeseriesid_co2_1, 15), append_co2(timeseriesid_co2_2, 10))
+  await asyncio.gather(append_co2(timeseriesid_co2_2, 10))
 
 def main():
   asyncio.run(start())

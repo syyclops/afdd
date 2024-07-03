@@ -209,31 +209,67 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
     # resample our data to "resample_size" and compute the rolling mean
     rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
     logger.info(f"resampled data: {rolling_mean}")
-    throwaway_ts = pd.to_datetime(rolling_mean.first_valid_index()) + datetime.timedelta(seconds = int((duration / resample_size - 1) * resample_size)) # gets rid of the first few values of our table that aren't full windows
-    rolling_mean = rolling_mean.rolling(window=f'{duration}s').mean()[throwaway_ts::]
+    overlap = (duration / resample_size - 1) * resample_size
+    throwaway_at_start = pd.to_datetime(rolling_mean.first_valid_index()) + datetime.timedelta(seconds=int(overlap)) # gets rid of the first few values of our table that aren't full windows
+    rolling_mean = rolling_mean.rolling(window=f'{duration}s').mean()[throwaway_at_start::]
     logger.info(f"DF after rolling_mean: {rolling_mean}")
 
     for id in rolling_mean.columns:
       # compare the rolling means to the rule's condition
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
+      logger.debug(f"rolling_mean: {rolling_mean}")
       # put all of the trues (anomalies found) into a series
-      anomaly_series = rolling_mean[id].loc[rolling_mean["results"] == True]
+      anomaly_df = rolling_mean.loc[rolling_mean["results"] == True, [id]]
+      anomaly_df["start_time"] = anomaly_df.index - datetime.timedelta(seconds=duration)
+      logger.info(f"anomaly_df: {anomaly_df}")
+
+      prev_end = anomaly_df.first_valid_index()
+      prev_start = anomaly_df["start_time"].get(prev_end)
+      prev_value = anomaly_df[id].get(prev_end)
 
       # go through the series of anomalies and add them to the list
-      for index, row in anomaly_series.items():
-        anomaly = Anomaly(start_time= index-datetime.timedelta(seconds=duration), end_time=index, rule_id=rule.rule_id, value=row, timeseriesid=id)
+      for index, row in anomaly_df.iterrows():
+        # if current anomaly's timeframe overlaps with previous, extend its timeframe by changing its start time and average the two values by weight (length of time)
+        if prev_start <= row["start_time"] <= prev_end:
+          weighted_average = calculate_weighted_avg(start1=prev_start, end1=prev_end, start2=row["start_time"], end2=index, val1=prev_value, val2=row[id])
+          logger.info(f"weighted avg: {weighted_average}")
+          anomaly_df.loc[index, "start_time"] = prev_start
+          anomaly_df.loc[index, id] = weighted_average
+          logger.info(f"Anomaly_df at iteration {index}: {anomaly_df}")
+
+        # else make an Anomaly from the previous information
+        else:
+          anomaly = Anomaly(
+            start_time=prev_start,
+            end_time=prev_end,
+            rule_id=rule.rule_id,
+            value=prev_value,
+            timeseriesid=id
+          )
+          anomaly_list.append(anomaly.to_tuple())
+
+        # update previous information to current information
+        prev_start = anomaly_df.loc[index, "start_time"]
+        prev_end = index
+        prev_value = anomaly_df.loc[index, id]
+
+      # append the last row of the anomaly_df to the anomaly list if there were anomalies
+      if not anomaly_df.empty:
+        row = anomaly_df.tail(1)
+        anomaly = Anomaly(
+          start_time=row["start_time"].get(row.index[0]),
+          end_time=row.index[0],
+          rule_id=rule.rule_id,
+          value=row[id].get(row.index[0]),
+          timeseriesid=id
+        )
         anomaly_list.append(anomaly.to_tuple())
   
-  logger.info(f"anomaly list: {anomaly_list}")
+  logger.info(f"Anomaly list:\n{anomaly_list}")
   return anomaly_list
-        
-    # else:
-    #   # TODO: figure out if we can do min/max a similar way to the rolling average
-    #   func = metric_map[rule.condition.metric]
-    #   sample_data = func(values)
-    #   threshold = rule.condition.threshold
-    #   logger.info(f"{ts_id}:{sample_data}, {threshold}")
-    #   op = rule.condition.operator
-    #   if comparator(op, sample_data, threshold):
-    #     anomaly = Anomaly(start_time=start_time, end_time=end_time, rule_id=rule.rule_id, value=sample_data, timeseriesid=ts_id)
-    #     anomaly_list.append(anomaly.to_tuple())
+
+
+def calculate_weighted_avg(start1: datetime.datetime, end1: datetime.datetime, start2: datetime.datetime, end2: datetime.datetime, val1: float, val2: float):
+  difference1 = (end1 - start1).seconds # maybe this is in seconds or minutes
+  difference2 = (end2 - start2).seconds
+  return (val1*difference1 + val2*difference2)/(difference1 + difference2)

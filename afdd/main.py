@@ -15,8 +15,11 @@ from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rul
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   """ Evaluates a rule against its threshold """
   while True:
-    start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time)
+    resample_size = 15
+    overlap = (rule.condition.duration / resample_size - 1) * resample_size # accounts for rolling averages from end of last iteration of loop
+    start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time) - datetime.timedelta(seconds=overlap)
     end_time = datetime.datetime.now()
+    logger.info(f"start_time: {start_time}, end_time: {end_time}")
     sensor = f"https://brickschema.org/schema/Brick#{rule.sensor_type}"
     timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
     anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule)
