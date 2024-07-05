@@ -19,4 +19,4 @@ rules_list = [
     Rule(rule_id=1, name="CO2 Too High", sensor_type="CO2_Sensor", description="Checks if the CO2 is between 1000 and 1500 ppm for 1 minute", condition=Condition(metric=Metric.AVERAGE, threshold=(1000, 1500), operator="in", severity=Severity.HIGH, duration=60, sleep_time=120)),
     Rule(rule_id=2, name="CO2 Too High", sensor_type="CO2_Sensor", description="Checks if the CO2 is over 1500 ppm for 1 minute", condition=Condition(metric=Metric.AVERAGE, threshold=1500, operator=">", severity=Severity.CRITICAL, duration=60, sleep_time=120))]
 
-analyze_data(timeseries_data=ts_data, rule=rules_list[0])
+analyze_data(conn=conn, timeseries_data=ts_data, rule=rules_list[0])

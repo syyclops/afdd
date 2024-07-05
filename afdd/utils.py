@@ -196,7 +196,7 @@ def series_comparator(op, data, threshold):
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules
-def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
+def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
   """
   Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
   """
@@ -215,14 +215,33 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
     logger.info(f"DF after rolling_mean: {rolling_mean}")
 
     for id in rolling_mean.columns:
+
       # compare the rolling means to the rule's condition
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
       logger.debug(f"rolling_mean: {rolling_mean}")
       # put all of the trues (anomalies found) into a series
+      
       anomaly_df = rolling_mean.loc[rolling_mean["results"] == True, [id]]
       anomaly_df["start_time"] = anomaly_df.index - datetime.timedelta(seconds=duration)
       logger.info(f"anomaly_df: {anomaly_df}")
 
+      # get the latest anomaly, put it into a df
+      """
+      latest_anomaly = get_latest_anomaly
+      latest_anom_df = latest_anomaly[0]
+      latest_anom_key = latest_anomaly[1]
+      """
+      latest_anomaly = get_latest_anomaly(conn=conn, timeseriesid=id)  # tuple
+      latest_anom_df = pd.DataFrame(latest_anomaly, columns=["end_time", id, "start_time"])
+      latest_anom_df['end_time'] = pd.to_datetime(latest_anom_df['end_time'])
+      latest_anom_df.set_index('end_time', inplace=True)
+      print(f"latest anomaly: {latest_anom_df}")
+
+      # concat latest_anom_df with anomaly_df
+      anomaly_df = pd.concat([latest_anom_df, anomaly_df])  # ignore_index=False
+      print(f"concatenated anomaly df: {anomaly_df}")
+
+      first_anomaly = True
       prev_end = anomaly_df.first_valid_index()
       prev_start = anomaly_df["start_time"].get(prev_end)
       prev_value = anomaly_df[id].get(prev_end)
@@ -239,14 +258,25 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
 
         # else make an Anomaly from the previous information
         else:
-          anomaly = Anomaly(
-            start_time=prev_start,
-            end_time=prev_end,
-            rule_id=rule.rule_id,
-            value=prev_value,
-            timeseriesid=id
-          )
-          anomaly_list.append(anomaly.to_tuple())
+          """ if first:
+                val = ((anomaly.to_tuple()), latest_anom_key)
+                update_list.append(val)
+                first = False
+
+                later return both anomaly_list and update_list and pass those values into different funcs
+              else: """
+          # if this is the first anomaly from this id, then it's an anomaly that must be updated in the table
+          if first_anomaly:
+            pass
+          else: 
+            anomaly = Anomaly(
+              start_time=prev_start,
+              end_time=prev_end,
+              rule_id=rule.rule_id,
+              value=prev_value,
+              timeseriesid=id
+            )
+            anomaly_list.append(anomaly.to_tuple())
 
         # update previous information to current information
         prev_start = anomaly_df.loc[index, "start_time"]
@@ -268,8 +298,31 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
   logger.info(f"Anomaly list:\n{anomaly_list}")
   return anomaly_list
 
-
 def calculate_weighted_avg(start1: datetime.datetime, end1: datetime.datetime, start2: datetime.datetime, end2: datetime.datetime, val1: float, val2: float):
   difference1 = (end1 - start1).seconds # maybe this is in seconds or minutes
   difference2 = (end2 - start2).seconds
   return (val1*difference1 + val2*difference2)/(difference1 + difference2)
+
+def get_latest_anomaly(conn: Connection, timeseriesid: str) -> tuple:
+  
+  query = """SELECT end_time, value, start_time
+              FROM anomalies
+              WHERE timeseriesid =%s
+              ORDER BY start_time DESC
+              LIMIT 1"""
+  
+  try:
+    with conn.cursor() as cur:
+      cur.execute(query, (timeseriesid,))
+      row = cur.fetchall()
+      conn.commit()
+      """
+      select end_time, value, start_time, anom_id
+      anom_id = get it out of row
+      remove from row
+      make df from other info in row
+      return df, anom_id
+      """
+      return row
+  except Exception as e:
+    raise e
