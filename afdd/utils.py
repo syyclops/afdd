@@ -4,7 +4,6 @@ import datetime
 import pandas as pd
 from psycopg import Connection
 import json
-import operator
 
 from afdd.models import PointReading, Rule, Anomaly, Condition, Metric, Severity
 from afdd.logger import logger
@@ -185,13 +184,6 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
 
   return df_pivoted
 
-# normal comparison helpers
-# metric_map = {
-#   "average": pd.Series.mean,
-#   "min": pd.Series.min,
-#   "max": pd.Series.max
-# }
-
 # series comparison helpers
 def series_in_range(data, threshold: tuple):
   return data.between(threshold[0], threshold[1])
@@ -246,6 +238,7 @@ def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) ->
       if latest_anomaly:
         anomaly_id = latest_anomaly[1]
         latest_anom_df = latest_anomaly[0]
+        latest_anom_df['start_time'] = pd.to_datetime(latest_anom_df['start_time']) # convert the latest_anom_df's start_time col to a datetime
         logger.info(f"latest anomaly: {latest_anom_df}")
         logger.info(f"anomaly_id: {anomaly_id}")
 
