@@ -231,11 +231,15 @@ def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) ->
       latest_anom_df = latest_anomaly[0]
       latest_anom_key = latest_anomaly[1]
       """
-      latest_anomaly = get_latest_anomaly(conn=conn, timeseriesid=id)  # tuple
-      latest_anom_df = pd.DataFrame(latest_anomaly, columns=["end_time", id, "start_time"])
-      latest_anom_df['end_time'] = pd.to_datetime(latest_anom_df['end_time'])
-      latest_anom_df.set_index('end_time', inplace=True)
+      # latest_anomaly = get_latest_anomaly(conn=conn, timeseriesid=id)  # tuple
+      # latest_anom_df = pd.DataFrame(latest_anomaly, columns=["end_time", id, "start_time"])
+      # latest_anom_df['end_time'] = pd.to_datetime(latest_anom_df['end_time'])
+      # latest_anom_df.set_index('end_time', inplace=True)
+      latest_anomaly = get_latest_anomaly(conn=conn, timeseriesid=id)
+      anomaly_id = latest_anomaly[1]
+      latest_anom_df = latest_anomaly[0]
       print(f"latest anomaly: {latest_anom_df}")
+      print(f"anomaly_id: {anomaly_id}")
 
       # concat latest_anom_df with anomaly_df
       anomaly_df = pd.concat([latest_anom_df, anomaly_df])  # ignore_index=False
@@ -303,18 +307,23 @@ def calculate_weighted_avg(start1: datetime.datetime, end1: datetime.datetime, s
   difference2 = (end2 - start2).seconds
   return (val1*difference1 + val2*difference2)/(difference1 + difference2)
 
-def get_latest_anomaly(conn: Connection, timeseriesid: str) -> tuple:
+def get_latest_anomaly(conn: Connection, timeseriesid: str) -> tuple[pd.DataFrame, int]:
   
-  query = """SELECT end_time, value, start_time
+  query = """SELECT end_time, value, start_time, anomaly_id
               FROM anomalies
               WHERE timeseriesid =%s
               ORDER BY start_time DESC
-              LIMIT 1"""
+              LIMIT 1""" # is the order by necessary in this query if it's only going to retrieve 1?
   
   try:
     with conn.cursor() as cur:
       cur.execute(query, (timeseriesid,))
       row = cur.fetchall()
+      row = row[0]
+      anomaly_id = row[3]
+      latest_anom_df = pd.DataFrame(row[0:3], columns=["end_time", timeseriesid, "start_time"])
+      latest_anom_df['end_time'] = pd.to_datetime(latest_anom_df['end_time'])
+      latest_anom_df.set_index('end_time', inplace=True)
       conn.commit()
       """
       select end_time, value, start_time, anom_id
@@ -323,6 +332,6 @@ def get_latest_anomaly(conn: Connection, timeseriesid: str) -> tuple:
       make df from other info in row
       return df, anom_id
       """
-      return row
+      return latest_anom_df, anomaly_id
   except Exception as e:
     raise e
