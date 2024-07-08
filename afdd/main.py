@@ -10,20 +10,27 @@ import os
 import asyncio
 
 from afdd.models import Rule
-from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph
+from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph, update_anomalies
 
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   """ Evaluates a rule against its threshold """
   while True:
+    logger.info("---------------------------------------------------------------------------------------------------------------------------------------------------------")
+    logger.info(f"*** STARTING ANALYSIS OF RULE {rule.rule_id} ***")
     resample_size = 15
     overlap = (rule.condition.duration / resample_size - 1) * resample_size # accounts for rolling averages from end of last iteration of loop
     start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time) - datetime.timedelta(seconds=overlap)
     end_time = datetime.datetime.now()
     logger.info(f"start_time: {start_time}, end_time: {end_time}")
     sensor = f"https://brickschema.org/schema/Brick#{rule.sensor_type}"
+    logger.info(f"*** LOADING TIMESERIES DATA FOR RULE {rule.rule_id} ***")
     timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
-    anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule)
+    logger.info(f"*** ANALYZING DATA FOR RULE {rule.rule_id} ***")
+    anomaly_list, update_list = analyze_data(conn=conn, timeseries_data=timeseries_df, rule=rule)
+    logger.info(f"*** APPENDING AND UPDATING ANOMALIES FOR RULE {rule.rule_id} ***")
     append_anomalies(conn=conn, anomaly_list=anomaly_list)
+    update_anomalies(conn=conn, update_list=update_list)
+    logger.info(f"*** SLEEPING RULE {rule.rule_id} ***")
     await asyncio.sleep(rule.condition.sleep_time)
 
 async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Rule]):

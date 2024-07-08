@@ -1,36 +1,15 @@
+from afdd.utils import update_anomalies, get_latest_anomaly
+import os
+import psycopg
 import pandas as pd
-# import datetime
-
-df = pd.DataFrame([[1, True], [4, False], [7, True]],
-                  index=['cobra', 'viper', 'sidewinder'],
-                  columns=['max_speed', 'shield'])
-
-row = df.tail(1)
-print(type(row))
-
-# print(df)
-
-# for index, row in df.iterrows():
-#     df.loc[index, "max_speed"] = 100
-#     print(f"current df: {df}")
-#     print(f"current row: {row}")
 
 
-# anom_df = df.loc[df["shield"] == True, ['max_speed']]
-# anom_df['start_time'] = 100
+postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
+conn = psycopg.connect(postgres_conn_string)
 
 
-# print(anom_df)
-# print(type(anom_df))
+# update_list = [(("2024-07-05T12:00:00", "2024-07-05T13:00:00", 1, 1000, "5e81563a-42ca-4137-9b36-f423a6f27a73-co2"), 1474), (("2024-07-05T12:00:00", "2024-07-05T13:00:00", 1, 1000, "5e81563a-42ca-4137-9b36-f423a6f27a73-co2"), 1473)]
 
-# date1 = datetime.datetime.now()
-# date2 = datetime.datetime(2023, 7, 3, 13)
+# update_anomalies(conn=conn, update_list=update_list)
 
-# print(date1, date2)
-# delta = date2-date1
-# print(type(delta))
-# convert = delta.seconds
-# print(convert, type(convert))
-
-if 4 <= 8 <= 10:
-    print('true')
+print(get_latest_anomaly(conn=conn, timeseriesid="5e81563a-42ca-4137-9b36-f423a6f27a73-co2", rule_id=2))
