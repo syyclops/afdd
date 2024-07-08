@@ -10,7 +10,7 @@ import os
 import asyncio
 
 from afdd.models import Rule
-from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph, update_anomalies
+from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph
 
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   """ Evaluates a rule against its threshold """
@@ -26,10 +26,9 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
     logger.info(f"*** LOADING TIMESERIES DATA FOR RULE {rule.rule_id} ***")
     timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
     logger.info(f"*** ANALYZING DATA FOR RULE {rule.rule_id} ***")
-    anomaly_list, update_list = analyze_data(conn=conn, timeseries_data=timeseries_df, rule=rule)
+    anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule)
     logger.info(f"*** APPENDING AND UPDATING ANOMALIES FOR RULE {rule.rule_id} ***")
     append_anomalies(conn=conn, anomaly_list=anomaly_list)
-    update_anomalies(conn=conn, update_list=update_list)
     logger.info(f"*** SLEEPING RULE {rule.rule_id} ***")
     await asyncio.sleep(rule.condition.sleep_time)
 

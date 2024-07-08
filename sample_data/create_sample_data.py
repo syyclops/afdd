@@ -1,4 +1,3 @@
-import time
 import datetime
 import random
 import psycopg
@@ -31,20 +30,3 @@ async def start():
 
 def main():
   asyncio.run(start())
-
-# async def main():
-#   logging.info("started main")
-#   coro_list = []
-#   coro_list.append(append_co2(timeseriesid_co2_1, 15))
-#   coro_list.append(append_co2(timeseriesid_co2_2,10))
-#   await asyncio.gather(*coro_list)
-
-# def main():
-#   while True:
-#     point_reading_list = []
-#     for id in timeseriesid_co2:
-#         point_reading_list.append(PointReading(ts=datetime.datetime.now().isoformat(timespec='seconds'), value=random.randint(0, 2000), timeseriesid=id))
-#     for id in timeseriesid_temp:
-#         point_reading_list.append(PointReading(ts=datetime.datetime.now().isoformat(timespec='seconds'), value=random.randint(0, 100), timeseriesid=id))
-#     insert_timeseries(conn, point_reading_list)
-#     time.sleep(15)

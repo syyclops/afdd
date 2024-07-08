@@ -75,7 +75,6 @@ def main():
   graph = load_graph(args.graph)
 
   name = analyze_past_data(conn=conn, start_time=args.start_time, end_time=args.end_time, rule_id=args.rule_id, graph=graph)
-  print(name)
 
 if __name__ == "__main__":
   main()

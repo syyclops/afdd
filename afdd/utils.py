@@ -36,24 +36,6 @@ def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
       conn.commit()
   except Exception as e:
     raise e
-
-def update_anomalies(conn: Connection, update_list: List[tuple]):
-  """ Updates a list of anomalies in postgres """
-  query = """UPDATE anomalies
-             SET start_time = %s, end_time = %s, rule_id = %s, value = %s, timeseriesid = %s
-             WHERE anomaly_id = %s"""
-  try:
-    with conn.cursor() as cur:
-      for anomaly, id in update_list:
-        cur.execute(query, (*anomaly, id))
-        conn.commit()
-  except Exception as e:
-    raise e
-
-def load_rules_json(rules_list: List[dict]):
-  with open('rules.json', 'w') as rules:
-    json.dump(rules_list, rules, indent=3)
-  logger.info('Rules loaded into json.')
   
 def load_rules(conn: Connection, rules_json: str) -> None:
   """ Loads rules into Postgres from a json file """
@@ -201,12 +183,11 @@ def series_comparator(op, data, threshold):
 
 # looping through point readings and checking for anomaly
 # only works for true or false rules
-def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) -> tuple[List[tuple], List[tuple]]:
+def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
   """
   Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
   """
   anomaly_list = []
-  update_list = []
   if rule.condition.metric == Metric.AVERAGE:
     resample_size = 15 # increment size of the rolling average (how far it's going to roll each time)
     op = rule.condition.operator
@@ -215,9 +196,9 @@ def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) ->
     # resample our data to "resample_size" and compute the rolling mean
     rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
     logger.info(f"resampled data: {rolling_mean}")
-    overlap = (duration / resample_size - 1) * resample_size
+    overlap = (duration / resample_size) * resample_size
     throwaway_at_start = pd.to_datetime(rolling_mean.first_valid_index()) + datetime.timedelta(seconds=int(overlap)) # gets rid of the first few values of our table that aren't full windows
-    rolling_mean = rolling_mean.rolling(window=f'{duration}s').mean()[throwaway_at_start::]
+    rolling_mean = rolling_mean.rolling(window=f'{duration + resample_size}s').mean()[throwaway_at_start::]
     logger.info(f"DF after rolling_mean: {rolling_mean}")
 
     for id in rolling_mean.columns:
@@ -230,24 +211,6 @@ def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) ->
       anomaly_df["start_time"] = anomaly_df.index - datetime.timedelta(seconds=duration)
       anomaly_df["start_time"] = pd.to_datetime(anomaly_df["start_time"])
       logger.info(f"anomaly_df: {anomaly_df}")
-
-      first_anomaly = False
-      
-      # get the latest anomaly, put it into a df
-      latest_anomaly = get_latest_anomaly(conn=conn, timeseriesid=id, rule_id=rule.rule_id)
-      if latest_anomaly:
-        anomaly_id = latest_anomaly[1]
-        latest_anom_df = latest_anomaly[0]
-        latest_anom_df['start_time'] = pd.to_datetime(latest_anom_df['start_time']) # convert the latest_anom_df's start_time col to a datetime
-        logger.info(f"latest anomaly: {latest_anom_df}")
-        logger.info(f"anomaly_id: {anomaly_id}")
-
-        # concat latest_anom_df with anomaly_df
-        anomaly_df = pd.concat([latest_anom_df, anomaly_df])  # ignore_index=False
-        
-        first_anomaly = True
-
-      logger.info(f"concatenated anomaly df: {anomaly_df}")
 
       prev_end = anomaly_df.first_valid_index()
       prev_start = anomaly_df["start_time"].get(prev_end)
@@ -272,13 +235,7 @@ def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) ->
               value=prev_value,
               timeseriesid=id
             )
-          # if this is the first anomaly from this id, then it's an anomaly that must be updated in the table
-          if first_anomaly:
-            update_list.append((anomaly.to_tuple(), anomaly_id))
-            first_anomaly = False
-          # else it's a new anomaly
-          else: 
-            anomaly_list.append(anomaly.to_tuple())
+          anomaly_list.append(anomaly.to_tuple())
 
         # update previous information to current information
         prev_start = anomaly_df.loc[index, "start_time"]
@@ -295,39 +252,12 @@ def analyze_data(conn: Connection, timeseries_data: pd.DataFrame, rule: Rule) ->
           value=row[id].get(row.index[0]),
           timeseriesid=id
         )
-        if first_anomaly:
-          update_list.append((anomaly.to_tuple(), anomaly_id))
-        else: 
-          anomaly_list.append(anomaly.to_tuple())
+        anomaly_list.append(anomaly.to_tuple())
   
   logger.info(f"Anomaly list:\n{anomaly_list}")
-  logger.info(f"Update list: {update_list}")
-  return anomaly_list, update_list
+  return anomaly_list
 
 def calculate_weighted_avg(start1: datetime.datetime, end1: datetime.datetime, start2: datetime.datetime, end2: datetime.datetime, val1: float, val2: float):
   difference1 = (end1 - start1).seconds # maybe this is in seconds or minutes
   difference2 = (end2 - start2).seconds
   return (val1*difference1 + val2*difference2)/(difference1 + difference2)
-
-def get_latest_anomaly(conn: Connection, timeseriesid: str, rule_id: int) -> tuple[pd.DataFrame, int] | None:
-  
-  query = """SELECT end_time, value, start_time, anomaly_id
-              FROM anomalies
-              WHERE timeseriesid =%s AND rule_id =%s
-              ORDER BY start_time DESC
-              LIMIT 1"""
-  
-  try:
-    with conn.cursor() as cur:
-      cur.execute(query, (timeseriesid, rule_id))
-      row = cur.fetchone()
-      anomaly_id = row[3]
-      latest_anom_df = pd.DataFrame((row[0:3],), columns=["end_time", timeseriesid, "start_time"])
-      latest_anom_df['end_time'] = pd.to_datetime(latest_anom_df['end_time'])
-      latest_anom_df.set_index('end_time', inplace=True)
-      conn.commit()
-      return latest_anom_df, anomaly_id
-  except TypeError:
-    return None
-  except Exception as e:
-    raise e
