@@ -1,8 +1,8 @@
-CREATE TABLE timeseries (
-  timeseriesid TEXT NOT NULL,
-  value FLOAT NOT NULL,
-  ts TIMESTAMPTZ NOT NULL
-);
+-- CREATE TABLE timeseries (
+--   timeseriesid TEXT NOT NULL,
+--   value FLOAT NOT NULL,
+--   ts TIMESTAMPTZ NOT NULL
+-- );
 
 CREATE TABLE rules (
   rule_id INT PRIMARY KEY,

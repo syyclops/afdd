@@ -8,6 +8,7 @@ import json
 from afdd.models import PointReading, Rule, Anomaly, Condition, Metric, Severity
 from afdd.logger import logger
 
+# used for create_sample_data
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
   """Insert a list of timeseries data into the timeseries table."""
   query = "INSERT INTO timeseries (ts, value, timeseriesid) VALUES "
@@ -26,7 +27,7 @@ def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
       conn.commit()
   except Exception as e:
     raise e
-  
+
 def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
   """ Inserts a list of anomalies into postgres """
   query = "INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid) VALUES (%s, %s, %s, %s, %s)"
@@ -189,9 +190,9 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule) -> List[tuple]:
   """
   anomaly_list = []
   if rule.condition.metric == Metric.AVERAGE:
-    resample_size = 15 # increment size of the rolling average (how far it's going to roll each time)
     op = rule.condition.operator
     duration = rule.condition.duration
+    resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)
 
     # resample our data to "resample_size" and compute the rolling mean
     rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()

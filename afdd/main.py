@@ -17,7 +17,7 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   while True:
     logger.info("---------------------------------------------------------------------------------------------------------------------------------------------------------")
     logger.info(f"*** STARTING ANALYSIS OF RULE {rule.rule_id} ***")
-    resample_size = 15
+    resample_size = int(rule.condition.duration * 0.25)
     overlap = (rule.condition.duration / resample_size - 1) * resample_size # accounts for rolling averages from end of last iteration of loop
     start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time) - datetime.timedelta(seconds=overlap)
     end_time = datetime.datetime.now()
@@ -42,13 +42,14 @@ async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Ru
 def main():
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
+  logger.info(f"postgres connection string: {postgres_conn_string}")
 
   # Loads rules.json into postgres then gets rules from postgres
   load_rules(conn=conn, rules_json='rules.json')
   rules_list = get_rules(conn=conn)
   
   # Load graph data into dataframe
-  graph_dataframe = load_graph(devices='kaiterra_example.ttl')
+  graph_dataframe = load_graph(devices='kaiterra_8493663d-21bf-4fa7-ba8a-163308655319.ttl')
   logger.info(graph_dataframe)
 
   # running anomaly detect in sleep time cycle
