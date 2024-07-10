@@ -6,3 +6,4 @@ logs/
 tests/test_loading.py
 afdd/scratch.py
 *.ttl
+*.json

@@ -7,11 +7,15 @@ from rdflib import Graph
 import psycopg
 import os
 import json
+from afdd.logger import logger
 
 def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id: int, graph: Graph):
   """
   Creates a json file with all anomalies that happened between start and end time for a specified rule.
   """
+  logger.info("---------------------------------------------------------------------------------")
+  logger.info(f"*** STARTED ANALYZING PAST DATA FROM {start_time} to {end_time} ***")
+
   # get full rule from rules table in postgres by rule_id
   query = """SELECT rule_id, name, sensor_type, description, condition FROM rules WHERE rule_id=%s"""
 
@@ -36,7 +40,7 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
 
   brick_class = f"https://brickschema.org/schema/Brick#{rule_object.sensor_type}"
   timeseries_df = load_timeseries(conn=conn, graphInfoDF=graph, start_time=start_time, end_time=end_time, brick_class=brick_class)
-  anomalies_list = analyze_data(timeseries_data=timeseries_df, rule=rule_object)
+  anomalies_list = analyze_data(start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
 
   # convert the anomalies list of tuples to a list of dictionaries in order to make it a json file
   dict_list = []
@@ -70,6 +74,7 @@ def main():
   args = parser.parse_args()
 
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
+  print(f"postgres connection string: {postgres_conn_string}")
   conn = psycopg.connect(postgres_conn_string)
 
   graph = load_graph(args.graph)

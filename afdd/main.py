@@ -26,7 +26,7 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
     logger.info(f"*** LOADING TIMESERIES DATA FOR RULE {rule.rule_id} ***")
     timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
     logger.info(f"*** ANALYZING DATA FOR RULE {rule.rule_id} ***")
-    anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule)
+    anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule, start_time=start_time)
     logger.info(f"*** APPENDING AND UPDATING ANOMALIES FOR RULE {rule.rule_id} ***")
     append_anomalies(conn=conn, anomaly_list=anomaly_list)
     logger.info(f"*** SLEEPING RULE {rule.rule_id} ***")
@@ -49,7 +49,7 @@ def main():
   rules_list = get_rules(conn=conn)
   
   # Load graph data into dataframe
-  graph_dataframe = load_graph(devices='kaiterra_8493663d-21bf-4fa7-ba8a-163308655319.ttl')
+  graph_dataframe = load_graph(devices='kaiterra_dcoffice.ttl')
   logger.info(graph_dataframe)
 
   # running anomaly detect in sleep time cycle
