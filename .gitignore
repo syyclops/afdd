@@ -5,5 +5,4 @@ __pycache__/
 logs/
 tests/test_loading.py
 afdd/scratch.py
-*.ttl
 *.json

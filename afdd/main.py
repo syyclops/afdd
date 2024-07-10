@@ -11,6 +11,7 @@ import asyncio
 
 from afdd.models import Rule
 from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph
+from dotenv import load_dotenv
 
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   """ Evaluates a rule against its threshold """
@@ -40,6 +41,13 @@ async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Ru
   await asyncio.gather(*coro_list)
 
 def main():
+  env_files = {
+  'env': '.env',
+  'dev': '.env.dev'
+  }
+  env_file = env_files.get(os.getenv("ENV"), '.env.dev')
+  load_dotenv(env_file, override=True)
+
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
   logger.info(f"postgres connection string: {postgres_conn_string}")

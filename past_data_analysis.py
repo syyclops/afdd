@@ -1,6 +1,4 @@
 import argparse
-
-from typing import List
 from afdd.utils import * 
 from afdd.models import *
 from rdflib import Graph
@@ -8,6 +6,7 @@ import psycopg
 import os
 import json
 from afdd.logger import logger
+from dotenv import load_dotenv
 
 def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id: int, graph: Graph):
   """
@@ -73,8 +72,14 @@ def main():
   parser.add_argument("--graph", required=True, help="name of ttl file containing points graph")
   args = parser.parse_args()
 
+  env_files = {
+  'env': '.env',
+  'dev': '.env.dev'
+  }
+  env_file = env_files.get(os.getenv("ENV"), '.env.dev')
+  load_dotenv(env_file, override=True)
+  
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
-  print(f"postgres connection string: {postgres_conn_string}")
   conn = psycopg.connect(postgres_conn_string)
 
   graph = load_graph(args.graph)
