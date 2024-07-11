@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 from psycopg import Connection
 import json
+import logging
 
 from afdd.models import PointReading, Rule, Anomaly, Condition, Metric, Severity
 from afdd.logger import logger

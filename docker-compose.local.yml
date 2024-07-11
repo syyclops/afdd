@@ -8,19 +8,33 @@ services:
       - postgresqldata:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     env_file:
-      - .env.dev
+      - .env
     ports:
       - 5432:5432
     networks:
       - local
-
   afdd:
     build:
       context: .
     volumes:
       - ./logs:/afdd/logs
     env_file:
-      - .env.dev
+      - .env
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://postgres:postgres@pg:5432/postgres
+    depends_on:
+      - pg
+    networks:
+      - local
+
+  sample-data:
+    build:
+      context: .
+      dockerfile: ./sample_data/Dockerfile
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://postgres:postgres@pg:5432/postgres
     depends_on:
       - pg
     networks:

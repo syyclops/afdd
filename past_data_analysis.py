@@ -22,7 +22,6 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
     cur.execute(query, (rule_id,))
     result = cur.fetchall()
     result = result[0]
-    print(result)
   
   rule_object = Rule(
     rule_id=rule_id, 
@@ -73,10 +72,14 @@ def main():
   args = parser.parse_args()
 
   env_files = {
-  'env': '.env',
+  'local': '.env',
   'dev': '.env.dev'
   }
-  env_file = env_files.get(os.getenv("ENV"), '.env.dev')
+  load_dotenv()
+  try:
+    env_file = env_files[os.environ['ENV']]
+  except Exception:
+    env_file = env_files['local']
   load_dotenv(env_file, override=True)
   
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']

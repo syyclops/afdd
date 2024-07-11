@@ -9,8 +9,6 @@ from afdd.models import PointReading
 from afdd.utils import insert_timeseries
 
 timeseriesid_co2_1 = ['8493663d-21bf-4fa7-ba8a-163308655319-co2', '9cdcab62-892c-46c8-b3d2-3d525512576a-co2', '5e81563a-42ca-4137-9b36-f423a6f27a73-co2']
-timeseriesid_co2_2 = ['5e81563a-42ca-4137-9b36-f423a6f27a73-co2']
-timeseriesid_temp = ['5e81563a-42ca-4137-9b36-f423a6f27a73-temperature', '8493663d-21bf-4fa7-ba8a-163308655319-temperature', '9cdcab62-892c-46c8-b3d2-3d525512576a-temperature']
 
 # Connect to the database
 postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']

@@ -1,13 +1,12 @@
-from rdflib import URIRef, Literal
 from typing import List
 import pandas as pd
-import time
 import datetime
 from afdd.logger import logger
 import psycopg
 from psycopg import Connection
 import os
 import asyncio
+import logging
 
 from afdd.models import Rule
 from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph
@@ -41,16 +40,23 @@ async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Ru
   await asyncio.gather(*coro_list)
 
 def main():
+  logging.info('') # makes logs show up in docker?
+  
   env_files = {
-  'env': '.env',
+  'local': '.env',
   'dev': '.env.dev'
   }
-  env_file = env_files.get(os.getenv("ENV"), '.env.dev')
-  load_dotenv(env_file, override=True)
+  load_dotenv()
 
+  try:
+    env_file = env_files[os.environ['ENV']]
+  except Exception:
+    env_file = env_files['local']
+    
+  load_dotenv(env_file, override=True)
+  logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
-  logger.info(f"postgres connection string: {postgres_conn_string}")
 
   # Loads rules.json into postgres then gets rules from postgres
   load_rules(conn=conn, rules_json='rules.json')
