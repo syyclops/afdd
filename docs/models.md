@@ -9,7 +9,7 @@ rule_id | name         | sensor_type | description                              
 2 | CO2 Critical | CO2_Sensor  | Triggers when average CO2 level exceeds 1500 ppm for 5 minutes | {"metric": "average", "duration": 300, "operator": ">", "severity": "critical", "threshold": 1500}
 
 ### Metric
-An enum class for defining different ways to sample our timeseries data according to specific rule (i.e. taking the average and comparing it to the threshold).
+An enum class for defining different ways to sample our timeseries data according to specific rule. For example, setting the metric to `AVERAGE` will calculate the average of every window of data of length `rule.duration` before analyzing it. `AVERAGE` is the only metric currently implemented.
 
 ### Severity
 An enum class for defining different severity levels of rules. For example, a rule checking for CO2 levels of over 1000 ppm might have a severity of HIGH, while a rule checking for over 1500 ppm might have a severity level of CRITICAL.
@@ -29,8 +29,10 @@ start_time              |        end_time        | rule_id | anomaly_id |  value
  2024-06-27 13:55:19+00 | 2024-06-27 13:56:19+00 |       2 |        231 |    1563 | 8493663d-21bf-4fa7-ba8a-163308655319-co2
  2024-06-27 13:54:19+00 | 2024-06-27 13:55:19+00 |       1 |        230 |    1252 | 5e81563a-42ca-4137-9b36-f423a6f27a73-co2
 
+ `anomaly_id` is not an attribute of the Anomaly class, but it is automatically generated and stored in the Postgres table. It is the primary key of the `anomalies` table.
+
 ### PointReading
-Defines the format of individual timeseries data being inserted into the Postgres `timeseries` table.
+Defines the format of individual timeseries data being inserted into the Postgres `timeseries` table. Only used for creating sample data.
 
 ### TimeseriesData
 Not used at the moment.

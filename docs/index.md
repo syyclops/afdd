@@ -11,7 +11,8 @@ The anomaly fault detection and diagnostics system detects anomalies in the inco
 - postgres/                 # postgres setup
 - sample_data/              # randomly generates sensor data
 - tests/
-- kaiterra_example.ttl      # contains device and sensor info
+- kaiterra_example.ttl      # contains an example graph of device and sensor info
+- kaiterra_dcoffice.ttl     # contains a graph of device and sensor info for kaiterra devices in the dc office 
 - Brick.ttl                 # contains Brick schema ontology
 ```
 
