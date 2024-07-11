@@ -1,16 +1,97 @@
-from typing import List
 import pandas as pd
 import datetime
-from afdd.logger import logger
 import psycopg
 from psycopg import Connection
 import os
 import asyncio
 import logging
-
-from afdd.models import Rule
-from afdd.utils import load_timeseries, append_anomalies, analyze_data, load_rules, get_rules, load_graph
 from dotenv import load_dotenv
+from datetime import timedelta
+from typing import List
+
+from afdd.logger import logger
+from afdd.models import Rule, Metric, Anomaly
+from afdd.utils import load_graph, round_time, series_comparator, calculate_weighted_avg
+from afdd.db import load_timeseries, append_anomalies, load_rules, get_rules
+
+
+# looping through point readings and checking for anomaly
+# only works for true or false rules
+def analyze_data(timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
+  """
+  Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
+  """
+  anomaly_list = []
+  if rule.condition.metric == Metric.AVERAGE:
+    op = rule.condition.operator
+    duration = rule.condition.duration
+    resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)
+
+    rounded_start = round_time(time=start_time, resample_size=resample_size)
+    # resample our data to "resample_size" and compute the rolling mean
+    rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
+    logger.info(f"resampled data:\n {rolling_mean}")
+    throwaway_at_start = rounded_start + timedelta(seconds=int(duration)) # gets rid of the first few values of our table that aren't full windows
+    rolling_mean = rolling_mean.rolling(window=f'{duration + resample_size}s').mean()[throwaway_at_start::]
+    logger.info(f"DF after rolling_mean:\n {rolling_mean}")
+
+    for id in rolling_mean.columns:
+      # compare the rolling means to the rule's condition
+      rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
+      logger.debug(f"result of comparing rolling means with threshold:\n {rolling_mean[[id, 'results']]}")
+
+      # put all of the trues (anomalies found) into a dataframe
+      anomaly_df = rolling_mean.loc[rolling_mean["results"] == True, [id]]
+      anomaly_df["start_time"] = anomaly_df.index - timedelta(seconds=duration)
+      anomaly_df["start_time"] = pd.to_datetime(anomaly_df["start_time"])
+      logger.info(f"anomaly_df:\n {anomaly_df}")
+
+      prev_end = anomaly_df.first_valid_index()
+      prev_start = anomaly_df["start_time"].get(prev_end)
+      prev_value = anomaly_df[id].get(prev_end)
+
+      # go through the series of anomalies and add them to the list
+      for index, row in anomaly_df.iterrows():
+        # if current anomaly's timeframe overlaps with previous, extend its timeframe by changing its start time and average the two values by weight (length of time)
+        if (prev_start <= row['start_time']) & (row['start_time'] <= prev_end):
+          weighted_average = calculate_weighted_avg(start1=prev_start, end1=prev_end, start2=row["start_time"], end2=index, val1=prev_value, val2=row[id])
+          # logger.info(f"weighted avg: {weighted_average}")
+          anomaly_df.loc[index, "start_time"] = prev_start
+          anomaly_df.loc[index, id] = weighted_average
+          # logger.info(f"Anomaly_df at iteration {index}: {anomaly_df}")
+
+        # else make an Anomaly from the previous information
+        else:
+          anomaly = Anomaly(
+              start_time=prev_start,
+              end_time=prev_end,
+              rule_id=rule.rule_id,
+              value=prev_value,
+              timeseriesid=id
+            )
+          anomaly_list.append(anomaly.to_tuple())
+          logger.info(f"Anomaly appended. Current anomaly list: {anomaly_list}")
+
+        # update previous information to current information
+        prev_start = anomaly_df.loc[index, "start_time"]
+        prev_end = index
+        prev_value = anomaly_df.loc[index, id]
+
+      # append the last row of the anomaly_df to the anomaly list if there were anomalies
+      if not anomaly_df.empty:
+        row = anomaly_df.tail(1)
+        anomaly = Anomaly(
+          start_time=row["start_time"].get(row.index[0]),
+          end_time=row.index[0],
+          rule_id=rule.rule_id,
+          value=row[id].get(row.index[0]),
+          timeseriesid=id
+        )
+        anomaly_list.append(anomaly.to_tuple())
+        logger.info(f"Anomaly appended. Current anomaly list: {anomaly_list}")
+  
+  logger.info(f"Final anomaly list:\n{anomaly_list}")
+  return anomaly_list
 
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   """ Evaluates a rule against its threshold """

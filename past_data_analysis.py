@@ -1,12 +1,16 @@
 import argparse
-from afdd.utils import * 
-from afdd.models import *
 from rdflib import Graph
+from psycopg import Connection
 import psycopg
 import os
 import json
 from afdd.logger import logger
 from dotenv import load_dotenv
+
+from afdd.models import Rule, Condition, Metric, Severity
+from afdd.db import load_timeseries
+from afdd.main import analyze_data
+from afdd.utils import load_graph
 
 def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id: int, graph: Graph):
   """
@@ -80,6 +84,7 @@ def main():
     env_file = env_files[os.environ['ENV']]
   except Exception:
     env_file = env_files['local']
+
   load_dotenv(env_file, override=True)
   
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
