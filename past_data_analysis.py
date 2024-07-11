@@ -8,7 +8,7 @@ from afdd.logger import logger
 from dotenv import load_dotenv
 
 from afdd.models import Rule, Condition, Metric, Severity
-from afdd.db import load_timeseries
+from afdd.db import load_timeseries, append_past_anomalies
 from afdd.main import analyze_data
 from afdd.utils import load_graph
 
@@ -63,7 +63,7 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
   with open(file_name, 'w') as f:
     json.dump(dict_list, f, indent=3)
 
-  # append_anomalies(conn=conn, anomaly_list=anomalies_list)  # not right now
+  append_past_anomalies(conn=conn, anomaly_list=anomalies_list)
   
   return f"Report file generated: {file_name}"
 

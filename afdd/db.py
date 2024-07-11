@@ -36,6 +36,27 @@ def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
       conn.commit()
   except Exception as e:
     raise e
+
+def append_past_anomalies(conn: Connection, anomaly_list: List[tuple]):
+  """ Inserts a list of anomalies into postgres, checking if the anomaly already exists in the table """
+  query = """INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid)
+  SELECT %s, %s, %s, %s, %s
+  WHERE NOT EXISTS (
+    SELECT 1 FROM anomalies
+    WHERE start_time = %s
+    AND end_time = %s
+    AND rule_id = %s
+    AND value = %s
+    AND timeseriesid = %s )"""
+  try:
+    with conn.cursor() as cur:
+      for anomaly in anomaly_list:
+        param = anomaly + anomaly
+        cur.execute(query, param)
+      conn.commit()
+  except Exception as e:
+    raise e
+  
   
 def load_rules(conn: Connection, rules_json: str) -> None:
   """ Loads rules into Postgres from a json file """
