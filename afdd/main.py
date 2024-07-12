@@ -145,7 +145,7 @@ def main():
   
   # Load graph data into dataframe
   graph_dataframe = load_graph(devices='kaiterra_dcoffice.ttl')
-  logger.info(graph_dataframe)
+  logger.info(f"graph dataframe: \n {graph_dataframe}")
 
   # running anomaly detect in sleep time cycle
   asyncio.run(start(conn=conn, graphInfoDF=graph_dataframe, rules_list=rules_list))

@@ -5,7 +5,7 @@
 The anomaly and fault detection and diagnostics (AFDD) system detects anomalies in the incoming IoT devices and logs them in a PostgreSQL database. Anomalies are defined as events that violate predefined thresholds, which are modeled by Rules.
 
 ### What is an anomaly and fault detection and diagnostics system?
-Many AFDD systems use artificial intelligence or pattern matching to look for patterns in sensor data in order to identify deviations from normal sensor activity, which are classified as "anomalies." This system uses a simple thresholding technique, meaning data is compared to thresholds. For example, a Rule may define Bad Air Quality as when carbon dioxide (CO2) sensor readings exceed 1000 parts per millions (ppm). Incoming data from a CO2 sensor is then compared to the threshold of 1000 ppm, and if it exceeds the threshold for longer than a predefined duration, then it will be recorded in a database. 
+Many AFDD systems use artificial intelligence or pattern matching to look for patterns in sensor data in order to identify deviations from normal sensor activity, which are classified as "anomalies." This system uses a simple thresholding technique, meaning data is compared to thresholds. For example, a threshold may be defined as 1000 parts per million (ppm) for a rule checking for high carbon dioxide (CO2) levels. With this rule, incoming data from a CO2 sensor would be compared to a threshold of 1000 ppm, and it if exceeds the threshold for longer than a predefined duration, then it will be recorded in a database.
 
 ## Project Structure
 
@@ -64,7 +64,8 @@ poetry run afdd
 
 #### Command prompt
 ```cmd
-SET ENV=dev && poetry run afdd
+SET ENV=dev 
+poetry run afdd
 ```
 #### Bash
 ```bash
