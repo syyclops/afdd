@@ -1,0 +1,267 @@
+@prefix brick: <https://brickschema.org/schema/Brick#> .
+@prefix ns1: <http://data.ashrae.org/bacnet/#> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:CO2_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2/timeseriesRef> ;
+    ns1:label "CO2" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-humidity> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Relative_Humidity_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-humidity/timeseriesRef> ;
+    ns1:label "Relative Humidity" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-pm10> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM10_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-pm10/timeseriesRef> ;
+    ns1:label "Particulate-PM10.0" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-pm25> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM2.5_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-pm25/timeseriesRef> ;
+    ns1:label "Particulate-PM2.5" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-signal_strength> a ns1:Point ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-signal_strength/timeseriesRef> ;
+    ns1:label "Signal Strength" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-temperature> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Temperature_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-temperature/timeseriesRef> ;
+    ns1:label "Temperature" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-tvoc> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:TVOC_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-tvoc/timeseriesRef> ;
+    ns1:label "TVOC Level" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-co2> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:CO2_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-co2/timeseriesRef> ;
+    ns1:label "CO2" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-humidity> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Relative_Humidity_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-humidity/timeseriesRef> ;
+    ns1:label "Relative Humidity" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-pm10> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM10_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-pm10/timeseriesRef> ;
+    ns1:label "Particulate-PM10.0" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-pm25> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM2.5_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-pm25/timeseriesRef> ;
+    ns1:label "Particulate-PM2.5" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-signal_strength> a ns1:Point ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-signal_strength/timeseriesRef> ;
+    ns1:label "Signal Strength" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-temperature> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Temperature_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-temperature/timeseriesRef> ;
+    ns1:label "Temperature" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-tvoc> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:TVOC_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-tvoc/timeseriesRef> ;
+    ns1:label "TVOC Level" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:CO2_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2/timeseriesRef> ;
+    ns1:label "CO2" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-humidity> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Relative_Humidity_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-humidity/timeseriesRef> ;
+    ns1:label "Relative Humidity" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-pm10> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM10_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-pm10/timeseriesRef> ;
+    ns1:label "Particulate-PM10.0" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-pm25> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM2.5_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-pm25/timeseriesRef> ;
+    ns1:label "Particulate-PM2.5" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-signal_strength> a ns1:Point ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-signal_strength/timeseriesRef> ;
+    ns1:label "Signal Strength" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-temperature> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Temperature_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-temperature/timeseriesRef> ;
+    ns1:label "Temperature" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-tvoc> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:TVOC_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-tvoc/timeseriesRef> ;
+    ns1:label "TVOC Level" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-co2> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:CO2_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-co2/timeseriesRef> ;
+    ns1:label "CO2" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-humidity> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Relative_Humidity_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-humidity/timeseriesRef> ;
+    ns1:label "Relative Humidity" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-pm10> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM10_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-pm10/timeseriesRef> ;
+    ns1:label "Particulate-PM10.0" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-pm25> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:PM2.5_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-pm25/timeseriesRef> ;
+    ns1:label "Particulate-PM2.5" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-signal_strength> a ns1:Point ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-signal_strength/timeseriesRef> ;
+    ns1:label "Signal Strength" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-temperature> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:Temperature_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-temperature/timeseriesRef> ;
+    ns1:label "Temperature" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-tvoc> a ns1:Point ;
+    ns1:HAS_BRICK_CLASS brick:TVOC_Level_Sensor ;
+    ns1:hasExternalReference <https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-tvoc/timeseriesRef> ;
+    ns1:label "TVOC Level" ;
+    ns1:objectOf <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "5e81563a-42ca-4137-9b36-f423a6f27a73-co2" .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-humidity/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "5e81563a-42ca-4137-9b36-f423a6f27a73-humidity" .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-pm10/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "5e81563a-42ca-4137-9b36-f423a6f27a73-pm10" .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-pm25/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "5e81563a-42ca-4137-9b36-f423a6f27a73-pm25" .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-signal_strength/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "5e81563a-42ca-4137-9b36-f423a6f27a73-signal_strength" .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-temperature/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "5e81563a-42ca-4137-9b36-f423a6f27a73-temperature" .
+
+<https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-tvoc/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "5e81563a-42ca-4137-9b36-f423a6f27a73-tvoc" .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-co2/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "8493663d-21bf-4fa7-ba8a-163308655319-co2" .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-humidity/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "8493663d-21bf-4fa7-ba8a-163308655319-humidity" .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-pm10/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "8493663d-21bf-4fa7-ba8a-163308655319-pm10" .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-pm25/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "8493663d-21bf-4fa7-ba8a-163308655319-pm25" .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-signal_strength/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "8493663d-21bf-4fa7-ba8a-163308655319-signal_strength" .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-temperature/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "8493663d-21bf-4fa7-ba8a-163308655319-temperature" .
+
+<https://syyclops.com/setty/dcoffice/point/8493663d-21bf-4fa7-ba8a-163308655319-tvoc/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "8493663d-21bf-4fa7-ba8a-163308655319-tvoc" .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "9cdcab62-892c-46c8-b3d2-3d525512576a-co2" .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-humidity/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "9cdcab62-892c-46c8-b3d2-3d525512576a-humidity" .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-pm10/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "9cdcab62-892c-46c8-b3d2-3d525512576a-pm10" .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-pm25/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "9cdcab62-892c-46c8-b3d2-3d525512576a-pm25" .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-signal_strength/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "9cdcab62-892c-46c8-b3d2-3d525512576a-signal_strength" .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-temperature/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "9cdcab62-892c-46c8-b3d2-3d525512576a-temperature" .
+
+<https://syyclops.com/setty/dcoffice/point/9cdcab62-892c-46c8-b3d2-3d525512576a-tvoc/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "9cdcab62-892c-46c8-b3d2-3d525512576a-tvoc" .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-co2/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "e4848531-911e-41f3-8b7a-4895a871e49b-co2" .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-humidity/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "e4848531-911e-41f3-8b7a-4895a871e49b-humidity" .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-pm10/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "e4848531-911e-41f3-8b7a-4895a871e49b-pm10" .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-pm25/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "e4848531-911e-41f3-8b7a-4895a871e49b-pm25" .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-signal_strength/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "e4848531-911e-41f3-8b7a-4895a871e49b-signal_strength" .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-temperature/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "e4848531-911e-41f3-8b7a-4895a871e49b-temperature" .
+
+<https://syyclops.com/setty/dcoffice/point/e4848531-911e-41f3-8b7a-4895a871e49b-tvoc/timeseriesRef> a ns1:TimeseriesReference ;
+    ns1:hasTimeseriesId "e4848531-911e-41f3-8b7a-4895a871e49b-tvoc" .
+
+<https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> a ns1:Device ;
+    ns1:device_id "5e81563a-42ca-4137-9b36-f423a6f27a73" ;
+    ns1:device_name "Center Office Space Kaiterra Air Quality Sensor" .
+
+<https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> a ns1:Device ;
+    ns1:device_id "8493663d-21bf-4fa7-ba8a-163308655319" ;
+    ns1:device_name "Boiler Room Kaiterra Air Quality Sensor" .
+
+<https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> a ns1:Device ;
+    ns1:device_id "9cdcab62-892c-46c8-b3d2-3d525512576a" ;
+    ns1:device_name "Conference Room Kaiterra Air Quality Sensor" .
+
+<https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> a ns1:Device ;
+    ns1:device_id "e4848531-911e-41f3-8b7a-4895a871e49b" ;
+    ns1:device_name "Developer Office Kaiterra Air Quality Sensor" .
+

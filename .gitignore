@@ -1,5 +1,8 @@
 venv/
 .env
+.env.dev
 __pycache__/
 logs/
 tests/test_loading.py
+afdd/scratch.py
+*.json

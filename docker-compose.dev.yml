@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  afdd:
+    build:
+      context: .
+    volumes:
+      - ./logs:/afdd/logs
+    env_file:
+      - .env.dev
+    networks:
+      - local
+
+networks:
+  local:

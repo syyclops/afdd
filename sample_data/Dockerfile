@@ -11,6 +11,10 @@ WORKDIR /app
 # Install poetry
 RUN pip install poetry
 
+ENV POSTGRES_PASSWORD=postgres
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_DB=postgres
+
 # copies everything into container
 COPY . /app
 
