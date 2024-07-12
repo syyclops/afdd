@@ -142,6 +142,6 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
     df_pivoted.sort_index(inplace=True)
 
     conn.commit()
-    logger.info(f"pivoted ts df: {df_pivoted}")
+    logger.info(f"pivoted ts df: \n{df_pivoted}")
 
   return df_pivoted

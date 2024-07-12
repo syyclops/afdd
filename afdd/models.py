@@ -66,7 +66,3 @@ class PointReading:
   ts: str
   value: float
   timeseriesid: str
-
-class TimeseriesData(TypedDict):
-  data: List[PointReading]
-  timeseriesid: str
