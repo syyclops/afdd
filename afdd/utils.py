@@ -33,7 +33,6 @@ def load_graph(devices: str) -> pd.DataFrame:
 
   # add the results of the query to a dictionary
   dict = {'class': [], 'point': [], 'timeseriesid': [], 'device name': []}
-
   for row in results:
     dict['class'].append(row['brickClass'])
     dict['point'].append(row['point'])
@@ -44,21 +43,6 @@ def load_graph(devices: str) -> pd.DataFrame:
   graphInfoDF = pd.DataFrame(dict)
 
   return graphInfoDF
-
-# series comparison helpers
-def series_in_range(data, threshold: tuple):
-  return data.between(threshold[0], threshold[1])
-
-series_symbol_map = {
-    '>': pd.Series.gt,
-    '>=': pd.Series.ge,
-    '<': pd.Series.lt, 
-    '<=': pd.Series.le,
-    'in': series_in_range
-    }
-
-def series_comparator(op, data, threshold):
-  return series_symbol_map[op](data, threshold)
 
 def round_time(time: str | datetime, resample_size: int) -> datetime:
   """
@@ -83,7 +67,26 @@ def round_time(time: str | datetime, resample_size: int) -> datetime:
   
   return rounded_datetime
 
+# series comparison helpers using vectorized operation
+def series_in_range(data, threshold: tuple):
+  return data.between(threshold[0], threshold[1])
+
+series_symbol_map = {
+    '>': pd.Series.gt,
+    '>=': pd.Series.ge,
+    '<': pd.Series.lt, 
+    '<=': pd.Series.le,
+    'in': series_in_range
+    }
+
+def series_comparator(op, data, threshold):
+  return series_symbol_map[op](data, threshold)
+
 def calculate_weighted_avg(start1: datetime, end1: datetime, start2: datetime, end2: datetime, val1: float, val2: float):
-  difference1 = (end1 - start1).seconds # maybe this is in seconds or minutes
+  """
+  Calculates weighted average of two values based on their respective timedeltas
+  """
+  difference1 = (end1 - start1).seconds
   difference2 = (end2 - start2).seconds
+  
   return (val1*difference1 + val2*difference2)/(difference1 + difference2)

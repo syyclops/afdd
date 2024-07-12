@@ -14,21 +14,18 @@ from afdd.models import Rule, Metric, Anomaly
 from afdd.utils import load_graph, round_time, series_comparator, calculate_weighted_avg
 from afdd.db import load_timeseries, append_anomalies, load_rules, get_rules
 
-
-# looping through point readings and checking for anomaly
-# only works for true or false rules
 def analyze_data(timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
   """
   Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
   """
   anomaly_list = []
-  if rule.condition.metric == Metric.AVERAGE:
+  if rule.condition.metric == Metric.AVERAGE:  # there's only Metric.AVERAGE at the moment
     op = rule.condition.operator
     duration = rule.condition.duration
     resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)
+    rounded_start = round_time(time=start_time, resample_size=resample_size)  # start time rounded to the nearest normalized time
 
-    rounded_start = round_time(time=start_time, resample_size=resample_size)
-    # resample our data to "resample_size" and compute the rolling mean
+    # nomralizes timestamps to intervals of resample size and compute the rolling mean
     rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
     logger.info(f"resampled data:\n {rolling_mean}")
     throwaway_at_start = rounded_start + timedelta(seconds=int(duration)) # gets rid of the first few values of our table that aren't full windows
@@ -36,7 +33,7 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> 
     logger.info(f"DF after rolling_mean:\n {rolling_mean}")
 
     for id in rolling_mean.columns:
-      # compare the rolling means to the rule's condition
+      # compare the rolling means to the rule's condition using vectorized operation
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
       logger.debug(f"result of comparing rolling means with threshold:\n {rolling_mean[[id, 'results']]}")
 
@@ -55,10 +52,8 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> 
         # if current anomaly's timeframe overlaps with previous, extend its timeframe by changing its start time and average the two values by weight (length of time)
         if (prev_start <= row['start_time']) & (row['start_time'] <= prev_end):
           weighted_average = calculate_weighted_avg(start1=prev_start, end1=prev_end, start2=row["start_time"], end2=index, val1=prev_value, val2=row[id])
-          # logger.info(f"weighted avg: {weighted_average}")
           anomaly_df.loc[index, "start_time"] = prev_start
           anomaly_df.loc[index, id] = weighted_average
-          # logger.info(f"Anomaly_df at iteration {index}: {anomaly_df}")
 
         # else make an Anomaly from the previous information
         else:
@@ -98,44 +93,52 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   while True:
     logger.info("---------------------------------------------------------------------------------------------------------------------------------------------------------")
     logger.info(f"*** STARTING ANALYSIS OF RULE {rule.rule_id} ***")
+
     resample_size = int(rule.condition.duration * 0.25)
     overlap = (rule.condition.duration / resample_size - 1) * resample_size # accounts for rolling averages from end of last iteration of loop
     start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time) - datetime.timedelta(seconds=overlap)
     end_time = datetime.datetime.now()
-    logger.info(f"start_time: {start_time}, end_time: {end_time}")
     sensor = f"https://brickschema.org/schema/Brick#{rule.sensor_type}"
+    logger.info(f"start_time: {start_time}, end_time: {end_time}")
+
     logger.info(f"*** LOADING TIMESERIES DATA FOR RULE {rule.rule_id} ***")
     timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
+
     logger.info(f"*** ANALYZING DATA FOR RULE {rule.rule_id} ***")
     anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule, start_time=start_time)
+
     logger.info(f"*** APPENDING AND UPDATING ANOMALIES FOR RULE {rule.rule_id} ***")
     append_anomalies(conn=conn, anomaly_list=anomaly_list)
+
     logger.info(f"*** SLEEPING RULE {rule.rule_id} ***")
     await asyncio.sleep(rule.condition.sleep_time)
 
 async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Rule]):
   """ Creates a start_rule() coroutine object for each rule in the rules_list """
   coro_list = []
+
   for rule in rules_list:
     coro_list.append(start_rule(conn=conn, graphInfoDF=graphInfoDF, rule=rule))
+
   await asyncio.gather(*coro_list)
 
 def main():
   logging.info('') # makes logs show up in docker?
   
+  # loads in env file
   env_files = {
   'local': '.env',
   'dev': '.env.dev'
   }
   load_dotenv()
-
   try:
     env_file = env_files[os.environ['ENV']]
   except Exception:
-    env_file = env_files['local']
-    
+    env_file = env_files['local']  
   load_dotenv(env_file, override=True)
+  
   logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+  
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
 
