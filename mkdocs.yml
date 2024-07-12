@@ -4,6 +4,7 @@ nav:
   - Home: index.md
   - Models: models.md
   - Logic: logic.md
+  - Scripts: scripts.md
 
 theme:
   name: material

@@ -1,5 +1,3 @@
-## Models
-
 ### Rule
 Represents a rule. Contains a `to_dict()` method to easily make it into a json object. Each rule has a unique rule_id, which links the Postgres `rules` and `anomalies` table. It acts as the primary key to the `rules` table and foreign key to `anomalies` table. Here is an example of our current rules table: 
 

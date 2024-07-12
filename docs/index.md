@@ -64,7 +64,8 @@ poetry run afdd
 
 #### Command prompt
 ```cmd
-SET ENV=dev && poetry run afdd
+SET ENV=dev 
+poetry run afdd
 ```
 #### Bash
 ```bash

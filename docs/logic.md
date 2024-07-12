@@ -8,7 +8,7 @@
 
 * If you're running with a hosted postgres database:
     
-    At the moment, the anomalies and rules tables need to be manually created. They should be modeled using the queries in init.sql. 
+    At the moment, the anomalies and rules tables need to be created by running the `setup_db.py` script, which can be found in the `scripts` directory. More information on running scripts can be found [here](scripts.md).
 
 - Example Timeseries Table:
 
