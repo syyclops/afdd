@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 from typing import TypedDict
 from enum import Enum
+import json
 
 @dataclass
 class Metric(Enum):
@@ -61,7 +62,7 @@ class Anomaly:
                      self.rule_id, 
                      self.value, 
                      self.timeseriesid, 
-                     self.metadata.to_dict())
+                     json.dumps(self.metadata.to_dict()))
     return anomaly_tuple
   
 @dataclass

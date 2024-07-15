@@ -47,5 +47,4 @@ async def start():
   await asyncio.gather(*coro_list)
 
 def main():
-  create_24h_data()
   asyncio.run(start())

@@ -2,6 +2,7 @@ import pandas as pd
 import datetime
 import psycopg
 from psycopg import Connection
+from rdflib import Literal
 import os
 import asyncio
 import logging
@@ -33,8 +34,8 @@ def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rul
     logger.info(f"DF after rolling_mean:\n {rolling_mean}")
 
     for id in rolling_mean.columns:
-      device_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == id, "deviceURI"].values[0]
-      component_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == id, "componentURI"].values[0]
+      device_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == Literal(id), "deviceURI"].values[0]
+      component_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == Literal(id), "componentURI"].values[0]
 
       # compare the rolling means to the rule's condition using vectorized operation
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
@@ -67,7 +68,7 @@ def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rul
               value=prev_value,
               timeseriesid=id,
               metadata=Metadata(
-                device_uri=device_uri,
+                device=device_uri,
                 component_uri=component_uri
               )
             )
@@ -87,7 +88,11 @@ def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rul
           end_time=row.index[0],
           rule_id=rule.rule_id,
           value=row[id].get(row.index[0]),
-          timeseriesid=id
+          timeseriesid=id,
+          metadata=Metadata(
+            device=device_uri,
+            component=component_uri
+          )
         )
         anomaly_list.append(anomaly.to_tuple())
         logger.info(f"Anomaly appended. Current anomaly list: {anomaly_list}")

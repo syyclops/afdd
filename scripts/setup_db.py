@@ -33,6 +33,7 @@ def main():
   anomaly_id INT GENERATED ALWAYS AS IDENTITY,
   value FLOAT NOT NULL,
   timeseriesid TEXT NOT NULL,
+  metadata jsonb NOT NULL,
   PRIMARY KEY(anomaly_id),
   CONSTRAINT fk_rules
     FOREIGN KEY(rule_id) 
