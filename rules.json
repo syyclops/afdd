@@ -26,5 +26,33 @@
          "sleep_time": 1800,
          "severity": "high"
       }
+   },
+   {
+      "rule_id": 3,
+      "name": "High PM10 24 Hour",
+      "sensor_type": "PM10_Level_Sensor",
+      "description": "Triggers when average PM10 levels are above 45 micrograms/meter^3 for 24 hours",
+      "condition": {
+         "metric": "average",
+         "threshold": 45,
+         "operator": ">",
+         "duration": 86400,
+         "sleep_time": 86400,
+         "severity": "high"
+      }
+   },
+   {
+      "rule_id": 4,
+      "name": "High PM2.5 24 Hour",
+      "sensor_type": "PM2.5_Level_Sensor",
+      "description": "Triggers when average PM2.5 levels are above 15 micrograms/meter^3 for 24 hours",
+      "condition": {
+         "metric": "average",
+         "threshold": 15,
+         "operator": ">",
+         "duration": 86400,
+         "sleep_time": 86400,
+         "severity": "high"
+      }
    }
 ]

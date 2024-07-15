@@ -9,6 +9,8 @@ from afdd.models import PointReading
 from afdd.db import insert_timeseries
 
 timeseriesid_co2_1 = ['8493663d-21bf-4fa7-ba8a-163308655319-co2', '9cdcab62-892c-46c8-b3d2-3d525512576a-co2', '5e81563a-42ca-4137-9b36-f423a6f27a73-co2']
+timeseriesid_pm10 = ['8493663d-21bf-4fa7-ba8a-163308655319-pm10']
+timeseriesid_pm25 = ['8493663d-21bf-4fa7-ba8a-163308655319-pm25']
 
 # Connect to the database
 postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
@@ -27,7 +29,12 @@ async def append_sample_data(id_list, time, min, max):
     await asyncio.sleep(time)
 
 async def start():
-  await asyncio.gather(append_sample_data(timeseriesid_co2_1, 10, 0, 2000))
+  coro_list = []
+  coro_list.append(append_sample_data(timeseriesid_co2_1, 10, 40, 60))
+  coro_list.append(append_sample_data(timeseriesid_pm10, 10, 40, 60))
+  coro_list.append(append_sample_data(timeseriesid_pm25, 10, 15, 30))
+
+  await asyncio.gather(*coro_list)
 
 def main():
   asyncio.run(start())
