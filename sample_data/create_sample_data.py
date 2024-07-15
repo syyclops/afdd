@@ -28,6 +28,16 @@ async def append_sample_data(id_list, time, min, max):
     logging.info(f"successfully appended at {datetime.datetime.now()} for the {time} second loop")
     await asyncio.sleep(time)
 
+def create_24h_data():
+  start_time = datetime.datetime(2024, 7, 13, 0, 0, 0)
+  end_time = datetime.datetime(2024, 7, 14, 23, 59, 59)
+  point_reading_list = []
+  while start_time < end_time:
+    point_reading_list.append(PointReading(ts=start_time.isoformat(timespec='seconds'), value=random.randint(40, 60), timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-pm10'))
+    point_reading_list.append(PointReading(ts=start_time.isoformat(timespec='seconds'), value=random.randint(15, 30), timeseriesid='8493663d-21bf-4fa7-ba8a-163308655319-pm25'))
+    start_time += datetime.timedelta(minutes=5)
+  insert_timeseries(conn=conn, data=point_reading_list)
+
 async def start():
   coro_list = []
   coro_list.append(append_sample_data(timeseriesid_co2_1, 10, 40, 60))
@@ -37,4 +47,5 @@ async def start():
   await asyncio.gather(*coro_list)
 
 def main():
+  create_24h_data()
   asyncio.run(start())

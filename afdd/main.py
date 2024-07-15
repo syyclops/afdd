@@ -140,6 +140,7 @@ def main():
   logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
   
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
+  logger.info(f"Postgres connection string: {postgres_conn_string}")
   conn = psycopg.connect(postgres_conn_string)
 
   # Loads rules.json into postgres then gets rules from postgres

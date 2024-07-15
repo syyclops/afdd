@@ -36,8 +36,8 @@
          "metric": "average",
          "threshold": 45,
          "operator": ">",
-         "duration": 86400,
-         "sleep_time": 86400,
+         "duration": 84600,
+         "sleep_time": 84600,
          "severity": "high"
       }
    },
@@ -50,8 +50,8 @@
          "metric": "average",
          "threshold": 15,
          "operator": ">",
-         "duration": 86400,
-         "sleep_time": 86400,
+         "duration": 84600,
+         "sleep_time": 84600,
          "severity": "high"
       }
    }
