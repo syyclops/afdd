@@ -10,11 +10,11 @@ from datetime import timedelta
 from typing import List
 
 from afdd.logger import logger
-from afdd.models import Rule, Metric, Anomaly
+from afdd.models import Rule, Metric, Anomaly, Metadata
 from afdd.utils import load_graph, round_time, series_comparator, calculate_weighted_avg
 from afdd.db import load_timeseries, append_anomalies, load_rules, get_rules
 
-def analyze_data(timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
+def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
   """
   Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
   """
@@ -33,6 +33,9 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> 
     logger.info(f"DF after rolling_mean:\n {rolling_mean}")
 
     for id in rolling_mean.columns:
+      device_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == id, "deviceURI"].values[0]
+      component_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == id, "componentURI"].values[0]
+
       # compare the rolling means to the rule's condition using vectorized operation
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
       logger.debug(f"result of comparing rolling means with threshold:\n {rolling_mean[[id, 'results']]}")
@@ -62,7 +65,11 @@ def analyze_data(timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> 
               end_time=prev_end,
               rule_id=rule.rule_id,
               value=prev_value,
-              timeseriesid=id
+              timeseriesid=id,
+              metadata=Metadata(
+                device_uri=device_uri,
+                component_uri=component_uri
+              )
             )
           anomaly_list.append(anomaly.to_tuple())
           logger.info(f"Anomaly appended. Current anomaly list: {anomaly_list}")
@@ -105,7 +112,7 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
     timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
 
     logger.info(f"*** ANALYZING DATA FOR RULE {rule.rule_id} ***")
-    anomaly_list = analyze_data(timeseries_data=timeseries_df, rule=rule, start_time=start_time)
+    anomaly_list = analyze_data(graph_info_df=graphInfoDF, timeseries_data=timeseries_df, rule=rule, start_time=start_time)
 
     logger.info(f"*** APPENDING AND UPDATING ANOMALIES FOR RULE {rule.rule_id} ***")
     append_anomalies(conn=conn, anomaly_list=anomaly_list)

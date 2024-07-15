@@ -251,17 +251,21 @@
 
 <https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73> a ns1:Device ;
     ns1:device_id "5e81563a-42ca-4137-9b36-f423a6f27a73" ;
+    ns1:isDeviceOf <https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini3> ;
     ns1:device_name "Center Office Space Kaiterra Air Quality Sensor" .
 
 <https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319> a ns1:Device ;
     ns1:device_id "8493663d-21bf-4fa7-ba8a-163308655319" ;
+    ns1:isDeviceOf <https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini> ;
     ns1:device_name "Boiler Room Kaiterra Air Quality Sensor" .
 
 <https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a> a ns1:Device ;
     ns1:device_id "9cdcab62-892c-46c8-b3d2-3d525512576a" ;
+    ns1:isDeviceOf <https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini4> ;
     ns1:device_name "Conference Room Kaiterra Air Quality Sensor" .
 
 <https://syyclops.com/setty/dcoffice/device/e4848531-911e-41f3-8b7a-4895a871e49b> a ns1:Device ;
     ns1:device_id "e4848531-911e-41f3-8b7a-4895a871e49b" ;
+    ns1:isDeviceOf <https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini2> ;
     ns1:device_name "Developer Office Kaiterra Air Quality Sensor" .
 

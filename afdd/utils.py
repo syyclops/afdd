@@ -13,18 +13,18 @@ def load_graph(devices: str) -> pd.DataFrame:
   PREFIX brick: <https://brickschema.org/schema/Brick#>
   PREFIX ns1: <http://data.ashrae.org/bacnet/#>
 
-  SELECT ?point ?brickClass ?externalRef ?objectOf ?timeseriesId ?device_name WHERE {
+  SELECT DISTINCT ?point ?brickClass ?externalRef ?deviceURI ?timeseriesId ?componentURI WHERE {
     ?point a ns1:Point ;
         ns1:HAS_BRICK_CLASS ?brickClass ;
         ns1:hasExternalReference ?externalRef ;
-        ns1:objectOf ?objectOf .
+        ns1:objectOf ?deviceURI .
 
       OPTIONAL {
         ?externalRef ns1:hasTimeseriesId ?timeseriesId .
     }
 
       OPTIONAL {
-        ?objectOf ns1:device_name ?device_name .
+        ?deviceURI ns1:isDeviceOf ?componentURI .
     }
   }
   """
@@ -32,12 +32,13 @@ def load_graph(devices: str) -> pd.DataFrame:
   results = g.query(query)
 
   # add the results of the query to a dictionary
-  dict = {'class': [], 'point': [], 'timeseriesid': [], 'device name': []}
+  dict = {'class': [], 'point': [], 'timeseriesid': [], 'deviceURI': [], 'componentURI': []}
   for row in results:
     dict['class'].append(row['brickClass'])
     dict['point'].append(row['point'])
     dict['timeseriesid'].append(row['timeseriesId'])
-    dict['device name'].append(row['device_name'])
+    dict['deviceURI'].append(row['deviceURI'])
+    dict['componentURI'].append(row['componentURI'])
 
   # make the result dictionary into a dataframe
   graphInfoDF = pd.DataFrame(dict)
