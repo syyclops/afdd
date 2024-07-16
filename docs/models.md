@@ -19,17 +19,20 @@ Represents the specific details of a rule. Contains a `to_dict()` method to easi
 * duration: the window size of the rolling average, the length of time that is considered an anomaly
 the length of time from which the average is calculated from 
 
+### Metadata
+Represents metadata about anomalies. Device and component should both be URIs.
+
 ### Anomaly
 Represents an anomaly. Contains a `to_tuple()` method to easily format and insert into Postgres table:
 
-start_time              |        end_time        | rule_id | anomaly_id |  value  |               timeseriesid               
-------------------------|------------------------|---------|------------|---------|------------------------------------------
- 2024-06-27 14:05:19+00 | 2024-06-27 14:06:19+00 |       2 |        235 | 1577.25 | 5e81563a-42ca-4137-9b36-f423a6f27a73-co2
- 2024-06-27 14:04:19+00 | 2024-06-27 14:05:19+00 |       1 |        234 |    1207 | 9cdcab62-892c-46c8-b3d2-3d525512576a-co2
- 2024-06-27 13:58:19+00 | 2024-06-27 13:59:19+00 |       2 |        233 |  1525.5 | 8493663d-21bf-4fa7-ba8a-163308655319-co2
- 2024-06-27 13:56:19+00 | 2024-06-27 13:57:19+00 |       1 |        232 |    1486 | 8493663d-21bf-4fa7-ba8a-163308655319-co2
- 2024-06-27 13:55:19+00 | 2024-06-27 13:56:19+00 |       2 |        231 |    1563 | 8493663d-21bf-4fa7-ba8a-163308655319-co2
- 2024-06-27 13:54:19+00 | 2024-06-27 13:55:19+00 |       1 |        230 |    1252 | 5e81563a-42ca-4137-9b36-f423a6f27a73-co2
+start_time              |        end_time        | rule_id | anomaly_id |  value  |               timeseriesid               | metadata
+------------------------|------------------------|---------|------------|---------|------------------------------------------|----------
+ 2024-06-27 14:05:19+00 | 2024-06-27 14:06:19+00 |       2 |        235 | 1577.25 | 5e81563a-42ca-4137-9b36-f423a6f27a73-co2 | {"device": "https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73", "component": "https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini3"}
+ 2024-06-27 14:04:19+00 | 2024-06-27 14:05:19+00 |       1 |        234 |    1207 | 9cdcab62-892c-46c8-b3d2-3d525512576a-co2 | {"device": "https://syyclops.com/setty/dcoffice/device/9cdcab62-892c-46c8-b3d2-3d525512576a, "component": "https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini4"}
+ 2024-06-27 13:58:19+00 | 2024-06-27 13:59:19+00 |       2 |        233 |  1525.5 | 8493663d-21bf-4fa7-ba8a-163308655319-co2 | {"device": "https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319", "component": "https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini"}
+ 2024-06-27 13:56:19+00 | 2024-06-27 13:57:19+00 |       1 |        232 |    1486 | 8493663d-21bf-4fa7-ba8a-163308655319-co2 | {"device": "https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319", "component": "https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini"}
+ 2024-06-27 13:55:19+00 | 2024-06-27 13:56:19+00 |       2 |        231 |    1563 | 8493663d-21bf-4fa7-ba8a-163308655319-co2 | {"device": "https://syyclops.com/setty/dcoffice/device/8493663d-21bf-4fa7-ba8a-163308655319", "component": "https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini"}
+ 2024-06-27 13:54:19+00 | 2024-06-27 13:55:19+00 |       1 |        230 |    1252 | 5e81563a-42ca-4137-9b36-f423a6f27a73-co2 | {"device": ""https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73", "component": "https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini3"}
 
  `anomaly_id` is not an attribute of the Anomaly class, but it is automatically generated and stored in the Postgres table. It is the primary key of the `anomalies` table.
 
