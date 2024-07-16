@@ -42,7 +42,7 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
 
   brick_class = f"https://brickschema.org/schema/Brick#{rule_object.sensor_type}"
   timeseries_df = load_timeseries(conn=conn, graphInfoDF=graph, start_time=start_time, end_time=end_time, brick_class=brick_class)
-  anomalies_list = analyze_data(start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
+  anomalies_list = analyze_data(graph_info_df=graph, start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
 
   # convert the anomalies list of tuples to a list of dictionaries in order to make it a json file
   dict_list = []

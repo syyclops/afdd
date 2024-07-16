@@ -25,10 +25,11 @@ def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rul
     duration = rule.condition.duration
     resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)
     rounded_start = round_time(time=start_time, resample_size=resample_size)  # start time rounded to the nearest normalized time
-
+    
     # nomralizes timestamps to intervals of resample size and compute the rolling mean
     rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
     logger.info(f"resampled data:\n {rolling_mean}")
+    
     throwaway_at_start = rounded_start + timedelta(seconds=int(duration)) # gets rid of the first few values of our table that aren't full windows
     rolling_mean = rolling_mean.rolling(window=f'{duration + resample_size}s').mean()[throwaway_at_start::]
     logger.info(f"DF after rolling_mean:\n {rolling_mean}")
@@ -40,7 +41,7 @@ def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rul
       # compare the rolling means to the rule's condition using vectorized operation
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
       logger.debug(f"result of comparing rolling means with threshold:\n {rolling_mean[[id, 'results']]}")
-
+      
       # put all of the trues (anomalies found) into a dataframe
       anomaly_df = rolling_mean.loc[rolling_mean["results"] == True, [id]]
       anomaly_df["start_time"] = anomaly_df.index - timedelta(seconds=duration)

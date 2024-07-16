@@ -87,7 +87,8 @@ def calculate_weighted_avg(start1: datetime, end1: datetime, start2: datetime, e
   """
   Calculates weighted average of two values based on their respective timedeltas
   """
-  difference1 = (end1 - start1).seconds
-  difference2 = (end2 - start2).seconds
+  difference1 = (pd.to_datetime(end1) - pd.to_datetime(start1)).total_seconds()
+  difference2 = (pd.to_datetime(end2) - pd.to_datetime(start2)).total_seconds()
+  result = (val1*difference1 + val2*difference2)/(difference1 + difference2)
   
-  return (val1*difference1 + val2*difference2)/(difference1 + difference2)
+  return result
