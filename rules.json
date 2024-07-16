@@ -34,7 +34,7 @@
       "description": "Triggers when average PM10 levels are above 45 micrograms/meter^3 for 24 hours",
       "condition": {
          "metric": "average",
-         "threshold": 45,
+         "threshold": 150,
          "operator": ">",
          "duration": 84600,
          "sleep_time": 84600,
@@ -48,7 +48,7 @@
       "description": "Triggers when average PM2.5 levels are above 15 micrograms/meter^3 for 24 hours",
       "condition": {
          "metric": "average",
-         "threshold": 15,
+         "threshold": 35,
          "operator": ">",
          "duration": 84600,
          "sleep_time": 84600,
