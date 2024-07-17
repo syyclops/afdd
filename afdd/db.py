@@ -7,9 +7,8 @@ import json
 from afdd.models import PointReading, Rule, Condition, Metric, Severity
 from afdd.logger import logger
 
-# used for create_sample_data
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
-  """Insert a list of timeseries data into the timeseries table."""
+  """Insert a list of timeseries data into the timeseries table. Used for creating sample data."""
   query = "INSERT INTO timeseries (ts, value, timeseriesid) VALUES "
   values = []
   placeholders = []
@@ -28,8 +27,8 @@ def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
     raise e
 
 def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
-  """ Inserts a list of anomalies into postgres """
-  query = "INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid) VALUES (%s, %s, %s, %s, %s)"
+  """ Inserts a list of anomalies into postgres. Used for real time analysis. """
+  query = "INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid, metadata) VALUES (%s, %s, %s, %s, %s, %s)"
   try:
     with conn.cursor() as cur:
       cur.executemany(query, anomaly_list)
@@ -38,16 +37,17 @@ def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
     raise e
 
 def append_past_anomalies(conn: Connection, anomaly_list: List[tuple]):
-  """ Inserts a list of anomalies into postgres, checking if the anomaly already exists in the table """
-  query = """INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid)
-  SELECT %s, %s, %s, %s, %s
+  """ Inserts a list of anomalies into postgres, checking if the anomaly already exists in the table. Used for past data analysis. """
+  query = """INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid, metadata)
+  SELECT %s, %s, %s, %s, %s, %s
   WHERE NOT EXISTS (
     SELECT 1 FROM anomalies
     WHERE start_time = %s
     AND end_time = %s
     AND rule_id = %s
     AND value = %s
-    AND timeseriesid = %s )"""
+    AND timeseriesid = %s
+    AND metadata = %s )"""
   try:
     with conn.cursor() as cur:
       for anomaly in anomaly_list:
@@ -80,6 +80,7 @@ def get_rules(conn: Connection) -> List[Rule]:
   """ Gets the table of rules from Postgres and returns a list of Rule objects """
   query = "SELECT * FROM RULES ;"
   rule_list = []
+
   try:
     with conn.cursor() as cur:
       cur.execute(query)
@@ -100,13 +101,14 @@ def get_rules(conn: Connection) -> List[Rule]:
         )))
       conn.commit()
       return rule_list
+    
   except Exception as e:
     raise e
 
 
 def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> pd.DataFrame:
   """
-  Creates a dataframe containing the timeseries data that corresponds to the given start/end time and brick class.
+  Creates a dataframe containing the timeseries data between given start and end time for given brick class.
   Timestamp is the index, the columns contain the data of each timeseriesid.
   """
   # gets all of the timeseriesids that correspond to the given brick class
