@@ -3,21 +3,20 @@ import os
 from dotenv import load_dotenv
 
 def main():
+  """ Sets up rules and anomalies table if they're not already there. """
   env_files = {
   'local': '.env',
   'dev': '.env.dev'
   }
-  load_dotenv()
 
+  load_dotenv()
   try:
     env_file = env_files[os.environ['ENV']]
   except KeyError as e:
     env_file = env_files['local']
-
   load_dotenv(env_file, override=True)
 
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
-  
   conn = psycopg.connect(postgres_conn_string)
   
   create_rules_query = """CREATE TABLE IF NOT EXISTS rules (
@@ -34,6 +33,7 @@ def main():
   anomaly_id INT GENERATED ALWAYS AS IDENTITY,
   value FLOAT NOT NULL,
   timeseriesid TEXT NOT NULL,
+  metadata jsonb NOT NULL,
   PRIMARY KEY(anomaly_id),
   CONSTRAINT fk_rules
     FOREIGN KEY(rule_id) 

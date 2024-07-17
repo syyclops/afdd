@@ -14,12 +14,12 @@ from afdd.utils import load_graph
 
 def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id: int, graph: Graph):
   """
-  Creates a json file with all anomalies that happened between start and end time for a specified rule.
+  Creates a json file with all anomalies that happened between start and end time for a specified rule and appends them to Postgresql anomalies table
   """
   logger.info("---------------------------------------------------------------------------------")
   logger.info(f"*** STARTED ANALYZING PAST DATA FROM {start_time} to {end_time} ***")
 
-  # get full rule from rules table in postgres by rule_id
+  # create rule object by querying rules table using rule_id
   query = """SELECT rule_id, name, sensor_type, description, condition FROM rules WHERE rule_id=%s"""
 
   with conn.cursor() as cur:
@@ -42,7 +42,7 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
 
   brick_class = f"https://brickschema.org/schema/Brick#{rule_object.sensor_type}"
   timeseries_df = load_timeseries(conn=conn, graphInfoDF=graph, start_time=start_time, end_time=end_time, brick_class=brick_class)
-  anomalies_list = analyze_data(start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
+  anomalies_list = analyze_data(graph_info_df=graph, start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
 
   # convert the anomalies list of tuples to a list of dictionaries in order to make it a json file
   dict_list = []
@@ -79,12 +79,12 @@ def main():
   'local': '.env',
   'dev': '.env.dev'
   }
+  
   load_dotenv()
   try:
     env_file = env_files[os.environ['ENV']]
   except Exception:
     env_file = env_files['local']
-
   load_dotenv(env_file, override=True)
   
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
@@ -92,7 +92,7 @@ def main():
 
   graph = load_graph(args.graph)
 
-  name = analyze_past_data(conn=conn, start_time=args.start_time, end_time=args.end_time, rule_id=args.rule_id, graph=graph)
+  analyze_past_data(conn=conn, start_time=args.start_time, end_time=args.end_time, rule_id=args.rule_id, graph=graph)
 
 if __name__ == "__main__":
   main()

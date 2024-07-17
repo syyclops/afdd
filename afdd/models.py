@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 from typing import TypedDict
 from enum import Enum
+import json
 
 @dataclass
 class Metric(Enum):
@@ -34,15 +35,34 @@ class Condition():
     return condition_dict
 
 @dataclass
+class Metadata:
+  """ this class defines attributes that describe metadata about Anomalies """
+  device: str
+  component: str
+
+  def to_dict(self):
+    metadata = {
+      'device': self.device,
+      'component': self.component}
+    return metadata
+
+
+@dataclass
 class Anomaly:
   start_time: str
   end_time: str
   rule_id: int
   value: float
   timeseriesid: str
-  
+  metadata: Metadata
+
   def to_tuple(self):
-    anomaly_tuple = (self.start_time, self.end_time, self.rule_id, self.value, self.timeseriesid)
+    anomaly_tuple = (self.start_time, 
+                     self.end_time, 
+                     self.rule_id, 
+                     self.value, 
+                     self.timeseriesid, 
+                     json.dumps(self.metadata.to_dict()))
     return anomaly_tuple
   
 @dataclass

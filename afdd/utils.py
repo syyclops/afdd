@@ -13,18 +13,18 @@ def load_graph(devices: str) -> pd.DataFrame:
   PREFIX brick: <https://brickschema.org/schema/Brick#>
   PREFIX ns1: <http://data.ashrae.org/bacnet/#>
 
-  SELECT ?point ?brickClass ?externalRef ?objectOf ?timeseriesId ?device_name WHERE {
+  SELECT DISTINCT ?point ?brickClass ?externalRef ?deviceURI ?timeseriesId ?componentURI WHERE {
     ?point a ns1:Point ;
         ns1:HAS_BRICK_CLASS ?brickClass ;
         ns1:hasExternalReference ?externalRef ;
-        ns1:objectOf ?objectOf .
+        ns1:objectOf ?deviceURI .
 
       OPTIONAL {
         ?externalRef ns1:hasTimeseriesId ?timeseriesId .
     }
 
       OPTIONAL {
-        ?objectOf ns1:device_name ?device_name .
+        ?deviceURI ns1:isDeviceOf ?componentURI .
     }
   }
   """
@@ -32,33 +32,18 @@ def load_graph(devices: str) -> pd.DataFrame:
   results = g.query(query)
 
   # add the results of the query to a dictionary
-  dict = {'class': [], 'point': [], 'timeseriesid': [], 'device name': []}
-
+  dict = {'class': [], 'point': [], 'timeseriesid': [], 'deviceURI': [], 'componentURI': []}
   for row in results:
     dict['class'].append(row['brickClass'])
     dict['point'].append(row['point'])
     dict['timeseriesid'].append(row['timeseriesId'])
-    dict['device name'].append(row['device_name'])
+    dict['deviceURI'].append(row['deviceURI'])
+    dict['componentURI'].append(row['componentURI'])
 
   # make the result dictionary into a dataframe
   graphInfoDF = pd.DataFrame(dict)
 
   return graphInfoDF
-
-# series comparison helpers
-def series_in_range(data, threshold: tuple):
-  return data.between(threshold[0], threshold[1])
-
-series_symbol_map = {
-    '>': pd.Series.gt,
-    '>=': pd.Series.ge,
-    '<': pd.Series.lt, 
-    '<=': pd.Series.le,
-    'in': series_in_range
-    }
-
-def series_comparator(op, data, threshold):
-  return series_symbol_map[op](data, threshold)
 
 def round_time(time: str | datetime, resample_size: int) -> datetime:
   """
@@ -83,7 +68,27 @@ def round_time(time: str | datetime, resample_size: int) -> datetime:
   
   return rounded_datetime
 
+# series comparison helpers using vectorized operation
+def series_in_range(data, threshold: tuple):
+  return data.between(threshold[0], threshold[1])
+
+series_symbol_map = {
+    '>': pd.Series.gt,
+    '>=': pd.Series.ge,
+    '<': pd.Series.lt, 
+    '<=': pd.Series.le,
+    'in': series_in_range
+    }
+
+def series_comparator(op, data, threshold):
+  return series_symbol_map[op](data, threshold)
+
 def calculate_weighted_avg(start1: datetime, end1: datetime, start2: datetime, end2: datetime, val1: float, val2: float):
-  difference1 = (end1 - start1).seconds # maybe this is in seconds or minutes
-  difference2 = (end2 - start2).seconds
-  return (val1*difference1 + val2*difference2)/(difference1 + difference2)
+  """
+  Calculates weighted average of two values based on their respective timedeltas
+  """
+  difference1 = (pd.to_datetime(end1) - pd.to_datetime(start1)).total_seconds()
+  difference2 = (pd.to_datetime(end2) - pd.to_datetime(start2)).total_seconds()
+  result = (val1*difference1 + val2*difference2)/(difference1 + difference2)
+  
+  return result
