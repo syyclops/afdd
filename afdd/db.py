@@ -3,6 +3,8 @@ from typing import List
 import pandas as pd
 from psycopg import Connection
 import json
+import neo4j
+from neo4j import GraphDatabase
 
 from afdd.models import PointReading, Rule, Condition, Metric, Severity
 from afdd.logger import logger
@@ -112,7 +114,7 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   Timestamp is the index, the columns contain the data of each timeseriesid.
   """
   # gets all of the timeseriesids that correspond to the given brick class
-  timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
+  timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == brick_class, "timeseriesid"].to_list()
 
   # converting timeseriesids to strings instead of literals so we can fetch them from the database
   timeseries_ids = [str(id) for id in timeseries_ids]
@@ -147,3 +149,19 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
     logger.info(f"pivoted ts df: \n{df_pivoted}")
 
   return df_pivoted
+
+def load_graph_neo4j(driver: GraphDatabase.driver, component_class: str) -> pd.DataFrame:
+  """ Loads all necessary sensor information for the given component for a neo4j graph """
+
+  query = """
+  MATCH (c:Class) WHERE c.uri CONTAINS $component_class
+  MATCH (c)-[:HAS_BRICK_CLASS]-(comp:Component)
+  MATCH (comp)-[:hasPoint]-(p:Point)
+  MATCH (comp)-[:isDeviceOf]-(d:Device)
+  MATCH (p)-[:HAS_BRICK_CLASS]-(class: Class)
+  MATCH (p)-[:hasExternalReference]-(t:TimeseriesReference)
+  RETURN p.uri AS point, class.uri AS class, t.hasTimeseriesId AS timeseriesid, d.uri AS deviceURI, comp.uri AS componentURI
+  """
+  
+  df = driver.execute_query(query_=query, component_class=component_class, database_="neo4j", result_transformer_=neo4j.Result.to_df)
+  return df
