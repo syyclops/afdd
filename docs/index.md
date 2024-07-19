@@ -11,6 +11,7 @@ Many AFDD systems use artificial intelligence or pattern matching to look for pa
 
 ```
 - afdd/                         # core application
+- neo4j/                        # neo4j setup
 - postgres/                     # postgres setup
 - sample_data/                  # randomly generates sensor data
 - scripts/                  
@@ -31,6 +32,10 @@ Create .env file
 ```
 ENV=<the env file you want to use (i.e. local, dev)> # optional: defaults to local (.env)
 POSTGRES_CONNECTION_STRING=<>
+NEO4J_PASSWORD=<>
+NEO4J_URI=<>
+NEO4J_URL=<>
+NEO4J_USER=<>
 ```
 
 Install dependencies
