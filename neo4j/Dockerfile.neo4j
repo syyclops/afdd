@@ -1,0 +1,21 @@
+FROM neo4j:5.18
+
+WORKDIR /var/lib/neo4j
+
+# Copy plugins
+# COPY /neo4j/plugins/apoc-*.jar plugins/
+# COPY /neo4j/plugins/neosemantics-*.jar plugins/
+
+COPY /neo4j/apoc.conf conf/
+
+ENV NEO4J_apoc_export_file_enabled=true \
+    NEO4J_apoc_import_file_enabled=true \
+    NEO4J_apoc_import_file_use__neo4j__config=true \
+    NEO4J_dbms_security_procedures_unrestricted=apoc.*,semantics.* \
+    dbms.directories.import="/" \
+    NEO4J_AUTH=neo4j/neo4j-password \
+    NEO4J_PLUGINS='["apoc", "n10s"]'
+
+EXPOSE 7474 7687
+
+CMD ["neo4j"]

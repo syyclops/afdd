@@ -23,7 +23,7 @@ async def append_sample_data(id_list, time, min, max):
   while True:
     point_reading_list = []
     for id in id_list:
-      point_reading_list.append(PointReading(ts=datetime.datetime.now().isoformat(timespec='seconds'), value=random.randint(min, max), timeseriesid=id))
+      point_reading_list.append(PointReading(ts=datetime.datetime.now(datetime.timezone.utc).isoformat(), value=random.randint(min, max), timeseriesid=id))
     insert_timeseries(conn, point_reading_list)
     logging.info(f"successfully appended at {datetime.datetime.now()} for the {time} second loop")
     await asyncio.sleep(time)

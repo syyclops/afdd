@@ -6,6 +6,8 @@ from rdflib import Literal
 import os
 import asyncio
 import logging
+
+from neo4j import GraphDatabase
 from dotenv import load_dotenv
 from datetime import timedelta
 from typing import List
@@ -13,7 +15,7 @@ from typing import List
 from afdd.logger import logger
 from afdd.models import Rule, Metric, Anomaly, Metadata
 from afdd.utils import load_graph, round_time, series_comparator, calculate_weighted_avg
-from afdd.db import load_timeseries, append_anomalies, load_rules, get_rules
+from afdd.db import load_timeseries, append_anomalies, load_rules, get_rules, load_graph_neo4j
 
 def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
   """
@@ -35,8 +37,8 @@ def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rul
     logger.info(f"DF after rolling_mean:\n {rolling_mean}")
 
     for id in rolling_mean.columns:
-      device_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == Literal(id), "deviceURI"].values[0]
-      component_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == Literal(id), "componentURI"].values[0]
+      device_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == id, "deviceURI"].values[0]
+      component_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == id, "componentURI"].values[0]
 
       # compare the rolling means to the rule's condition using vectorized operation
       rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
@@ -156,13 +158,21 @@ def main():
   logger.info(f"Postgres connection string: {postgres_conn_string}")
   conn = psycopg.connect(postgres_conn_string)
 
+  neo4j_uri = os.environ['NEO4J_URI']
+  neo4j_user = os.environ['NEO4J_USER']
+  neo4j_password = os.environ['NEO4J_PASSWORD']
+  
+  neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password), max_connection_lifetime=200)
+  neo4j_driver.verify_connectivity()
+
   # Loads rules.json into postgres then gets rules from postgres
   load_rules(conn=conn, rules_json='rules.json')
   rules_list = get_rules(conn=conn)
   
   # Load graph data into dataframe
-  graph_dataframe = load_graph(devices='kaiterra_dcoffice.ttl')
-  logger.info(f"graph dataframe: \n {graph_dataframe}")
+  graph_dataframe = load_graph_neo4j(driver=neo4j_driver, component_class="IAQ_Sensor_Equipment")
+  logger.info(f"graph dataframe: \n {graph_dataframe.to_string()}")
+  neo4j_driver.close()
 
   # running anomaly detect in sleep time cycle
   asyncio.run(start(conn=conn, graphInfoDF=graph_dataframe, rules_list=rules_list))
