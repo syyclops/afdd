@@ -1,4 +1,4 @@
-from rdflib import Graph
+from rdflib import Graph, Literal
 from datetime import datetime, timedelta, timezone
 import pandas as pd
 
@@ -28,6 +28,7 @@ def load_graph(devices: str) -> pd.DataFrame:
     }
   }
   """
+  
   # query the graph for all of the points that were loaded on
   results = g.query(query)
 
@@ -43,7 +44,16 @@ def load_graph(devices: str) -> pd.DataFrame:
   # make the result dictionary into a dataframe
   graphInfoDF = pd.DataFrame(dict)
 
+  graphInfoDF['class'] = graphInfoDF['class'].apply(strip_brick_prefix)
+
   return graphInfoDF
+
+def strip_brick_prefix(uri: Literal):
+  """ Gets rid of brick prefix from a URI and removes periods so the Brick class can be used as a variable """
+  uri = str(uri)
+  parts = uri.split("#")
+  ending = parts[-1].replace(".", "")
+  return ending
 
 def round_time(time: str | datetime, resample_size: int) -> datetime:
   """

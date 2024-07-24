@@ -105,20 +105,21 @@ def get_rules(conn: Connection) -> List[Rule]:
   except Exception as e:
     raise e
 
-
-def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> pd.DataFrame:
+def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_list: List[str]) -> pd.DataFrame:
   """
-  Creates a dataframe containing the timeseries data between given start and end time for given brick class.
-  Timestamp is the index, the columns contain the data of each timeseriesid.
+  Creates a dataframe containing the timeseries data between given start and end time for given brick classes.
+  The brick classes should just be passed in as the ending of the URI (everything after https://brickschema.org/schema/Brick#).
+  It returns a multi-indexed dataframe where the level 0 index is component, the level 1 index is timestamp, and each column is a brick class.
   """
   # gets all of the timeseriesids that correspond to the given brick class
-  timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
-
-  # converting timeseriesids to strings instead of literals so we can fetch them from the database
-  timeseries_ids = [str(id) for id in timeseries_ids]
+  all_ts_ids = []
+  for brick_class in brick_list:
+    timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == brick_class, "timeseriesid"].to_list()
+    timeseries_ids = [str(id) for id in timeseries_ids]
+    all_ts_ids.extend(timeseries_ids)
 
   # Generating placeholders for SQL IN clause
-  placeholders = ', '.join(['%s' for _ in timeseries_ids])
+  placeholders = ', '.join(['%s' for _ in all_ts_ids])
 
   query = f"""
     SELECT ts, value, timeseriesid
@@ -128,22 +129,31 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   """
 
   with conn.cursor() as cur:
-    cur.execute(query, timeseries_ids + [start_time, end_time])
+    cur.execute(query, all_ts_ids + [start_time, end_time])
     rows = cur.fetchall()
     
     # make a dataframe out of the query results
     df = pd.DataFrame(rows, columns=["ts", "value", "timeseriesid"])
+
     logger.info(f"timeseries data: {df}")
 
     # convert the ts column to datetimes
     df['ts'] = pd.to_datetime(df['ts'])
     df.drop_duplicates(inplace=True)
-    
+
+    # strip whitespaces so that merge can match timeseriesids
+    graphInfoDF["timeseriesid"] = graphInfoDF["timeseriesid"].str.strip()
+    df['timeseriesid'] = df['timeseriesid'].str.strip()
+
+    # merge ts dataframe and information from graph by matching up timeseriesid
+    timeseries_df = pd.merge(df, graphInfoDF[["class", "timeseriesid", "componentURI"]], on="timeseriesid", how="left")
+    logger.info(f"timeseriesdf merged: \n{timeseries_df}")
+
     # pivot the df to have ts as the index, timeseriesid as the columns and value as the values
-    df_pivoted = df.pivot(index='ts', columns='timeseriesid', values='value')
+    df_pivoted = timeseries_df.pivot_table(index=['componentURI', 'ts'], columns='class', values='value', aggfunc="first")
     df_pivoted.sort_index(inplace=True)
 
     conn.commit()
-    logger.info(f"pivoted ts df: \n{df_pivoted}")
+    logger.info(f"pivoted ts df: \n{df_pivoted.to_string()}")
 
   return df_pivoted
