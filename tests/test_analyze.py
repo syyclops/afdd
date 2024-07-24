@@ -6,34 +6,71 @@ from afdd.models import Rule, Condition, Metric, Severity
 import psycopg
 import os
 from afdd.logger import logger
-import datetime
+from datetime import timedelta
+from typing import List
 
-# postgres_conn_string = os.environ(['POSTGRES_CONNECTION_STRING'])
-# conn = psycopg.connect(postgres_conn_string)
+def analyze_data2(graph: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
+  rolling_mean = timeseries_data.rolling(2).sum()
+  print("new_df after rolling: \n", rolling_mean)
+  # print("new df indices: ", df.index.to_list())
 
-# logger.info("started running")
+  # Evaluate the equation
+  rolling_mean['results'] = rolling_mean.eval(rule.condition.equation)
+  print("new_df with results column:\n", rolling_mean)
 
-graph = load_graph(devices='kaiterra_dcoffice.ttl')
-data_dict = {
-    "ts": ['2024-07-10 10:10:00', '2024-07-10 10:11:00'],
-    '8493663d-21bf-4fa7-ba8a-163308655319-co2' : [1200, 1500]
-}
-df = pd.DataFrame(data_dict)
-df['ts'] = pd.to_datetime(df['ts'], utc=True)
-df = df.set_index("ts")
-print(df)
+  # Put Trues in anomaly_df
+  anomaly_df = rolling_mean.loc[rolling_mean["results"] == True]
+  anomaly_df = anomaly_df.drop(columns=['results'])
+  print("anomaly_df:\n", anomaly_df)
 
 
-# df_pivoted = df.pivot(index='end_time', columns=['8493663d-21bf-4fa7-ba8a-163308655319-co2', 'start_time'], values=['8493663d-21bf-4fa7-ba8a-163308655319-co2', 'start_time'])
-# ts_data = pd.DataFrame([1200,'2024-07-10 10:00:00'], index=[pd.to_datetime('2024-07-10 10:10:00')], columns=['8493663d-21bf-4fa7-ba8a-163308655319-co2', 'start_time'])
-# ts_data = load_timeseries(conn=conn, graphInfoDF=graph, start_time='2024-07-08T14:38:29', end_time='2024-07-08 14:41:14', brick_class='https://brickschema.org/schema/Brick#CO2_Sensor')
-# print(f"timeseries data: {df_pivoted}")
+  anomaly_df.reset_index(level='ts', inplace=True)  # to make the index 'ts' a column
+  anomaly_df.rename(columns={"ts" : "end_time"}, inplace=True) 
+  print("anomaly_df after resetting end_time index:\n", anomaly_df)
 
-# rules_list = [
-#     Rule(rule_id=1, name="CO2 Too High", sensor_type="CO2_Sensor", description="Checks if the CO2 is between 1000 and 1500 ppm for 1 minute", condition=Condition(metric=Metric.AVERAGE, threshold=(1000, 1500), operator="in", severity=Severity.HIGH, duration=60, sleep_time=120)),
-#     Rule(rule_id=2, name="CO2 Too High", sensor_type="CO2_Sensor", description="Checks if the CO2 is over 1500 ppm for 1 minute", condition=Condition(metric=Metric.AVERAGE, threshold=1500, operator=">", severity=Severity.CRITICAL, duration=60, sleep_time=120))]
+  anomaly_df["start_time"] = anomaly_df['end_time'] - timedelta(minutes=60)
+  anomaly_df["start_time"] = pd.to_datetime(anomaly_df["start_time"])
+  print("anomaly_df after adding start_time:\n", anomaly_df)
 
-co2 = Rule(rule_id=1, name="CO2 Too High", sensor_type="CO2_Sensor", description="Checks if the CO2 is between 1000 and 1500 ppm for 1 minute", condition=Condition(metric=Metric.AVERAGE, threshold=(1000, 1500), operator="in", severity=Severity.HIGH, duration=60, sleep_time=120))
+  for component, new_df in anomaly_df.groupby(level=0):
+    # new_df = new_df[throwaway::]
+    print("component: ", component)
+    print("component df:\n", new_df)
+    combine_mask = (new_df['start_time'] <= new_df['end_time'].shift(1))
 
-anomalies_list = analyze_data(graph_info_df=graph, start_time = '2024-07-10T09:00:00', timeseries_data=df, rule=co2)
-# print(f"anomalies_list: {anomalies_list}")
+    group_key = (~combine_mask).cumsum()
+    grouped = new_df.groupby(group_key).agg({
+        'start_time': 'min',
+        'end_time': 'max'
+    }).reset_index(drop=True)
+    print("new_df after combining:\n", grouped)
+
+def main():
+    combo_rule = Rule(
+    rule_id=5,
+    name="pm rule",
+    component_type="IAQ sensor",
+    sensor_types=["PM25_Level_Sensor", "PM10_Level_Sensor"],
+    description="Triggers when pm10 counts and pm2.5 counts combined average over 70 micrograms per cubic meter for 1 minute",
+    condition=Condition(
+        equation="(PM25_Level_Sensor + PM10_Level_Sensor) > 70",
+        metric=Metric.AVERAGE,
+        duration=60,
+        sleep_time=60,
+        severity=Severity.HIGH
+        )
+    )
+
+    sensor_list = ["PM10_Level_Sensor", "PM25_Level_Sensor"]
+
+    postgres_conn_string = os.environ(['POSTGRES_CONNECTION_STRING'])
+    conn = psycopg.connect(postgres_conn_string)
+
+    graph = load_graph(devices='kaiterra_dcoffice.ttl')
+
+    ts_data = load_timeseries(conn=conn, graphInfoDF=graph, start_time='2024-07-24T15:46:00', end_time='2024-07-24T15:50:00', brick_list=sensor_list)
+
+    list = analyze_data(graph_info_df=graph, timeseries_data=ts_data, rule=combo_rule, start_time='2024-07-24T15:46:00')
+
+if __name__ == "__main__":
+   main()
