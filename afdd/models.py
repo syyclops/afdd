@@ -3,6 +3,8 @@ from typing import List
 from typing import TypedDict
 from enum import Enum
 import json
+from rdflib import URIRef
+import numpy as np
 
 @dataclass
 class Metric(Enum):
@@ -50,16 +52,14 @@ class Anomaly:
   start_time: str
   end_time: str
   rule_id: int
-  value: float
-  timeseriesid: str
+  points: np.ndarray
   metadata: Metadata
 
   def to_tuple(self):
     anomaly_tuple = (self.start_time, 
                      self.end_time, 
-                     self.rule_id, 
-                     self.value, 
-                     self.timeseriesid, 
+                     self.rule_id,  
+                     json.dumps(self.points.tolist()), 
                      json.dumps(self.metadata.to_dict()))
     return anomaly_tuple
   
