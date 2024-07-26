@@ -5,6 +5,7 @@ from psycopg import Connection
 import json
 import neo4j
 from neo4j import GraphDatabase
+from afdd.utils import strip_brick_prefix
 
 from afdd.models import PointReading, Rule, Condition, Metric, Severity
 from afdd.logger import logger
@@ -173,4 +174,5 @@ def load_graph_neo4j(driver: GraphDatabase.driver, component_class: str) -> pd.D
   """
   
   df = driver.execute_query(query_=query, component_class=component_class, database_="neo4j", result_transformer_=neo4j.Result.to_df)
+  df['class'] = df['class'].apply(strip_brick_prefix)
   return df
