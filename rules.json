@@ -45,7 +45,7 @@
       "rule_id": 4,
       "name": "High PM2.5 24 Hour",
       "component_type": "IAQ_Sensor_Equipment",
-      "sensor_types": ["PM2.5_Level_Sensor"],
+      "sensor_types": ["PM25_Level_Sensor"],
       "description": "Triggers when average PM2.5 levels are above 35 micrograms/meter^3 for 24 hours",
       "condition": {
          "equation": "PM25_Level_Sensor > 35",

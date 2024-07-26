@@ -2,7 +2,6 @@ import pandas as pd
 import datetime
 import psycopg
 from psycopg import Connection
-from rdflib import Literal
 import os
 import asyncio
 import logging
@@ -11,96 +10,67 @@ from datetime import timedelta
 from typing import List
 
 from afdd.logger import logger
-from afdd.models import Rule, Metric, Anomaly, Metadata
-from afdd.utils import load_graph, round_time, series_comparator, calculate_weighted_avg
+from afdd.models import Rule
+from afdd.utils import load_graph, round_time, create_anomaly
 from afdd.db import load_timeseries, append_anomalies, load_rules, get_rules
 
-def analyze_data(graph_info_df: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
-  """
-  Evaluates the given timeseries data against the given rule and returns a list of tuples representing anomalies.
-  """
-  anomaly_list = []
-  if rule.condition.metric == Metric.AVERAGE:  # there's only Metric.AVERAGE at the moment
-    op = rule.condition.operator
-    duration = rule.condition.duration
-    resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)
-    rounded_start = round_time(time=start_time, resample_size=resample_size)  # start time rounded to the nearest normalized time
-    
-    # nomralizes timestamps to intervals of resample size and compute the rolling mean
-    rolling_mean = timeseries_data.resample(f'{resample_size}s').mean()
-    logger.info(f"resampled data:\n {rolling_mean}")
-    
-    throwaway_at_start = rounded_start + timedelta(seconds=int(duration)) # gets rid of the first few values of our table that aren't full windows
-    rolling_mean = rolling_mean.rolling(window=f'{duration + resample_size}s').mean()[throwaway_at_start::]
-    logger.info(f"DF after rolling_mean:\n {rolling_mean}")
-
-    for id in rolling_mean.columns:
-      device_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == Literal(id), "deviceURI"].values[0]
-      component_uri = graph_info_df.loc[graph_info_df["timeseriesid"] == Literal(id), "componentURI"].values[0]
-
-      # compare the rolling means to the rule's condition using vectorized operation
-      rolling_mean["results"] = series_comparator(op, rolling_mean[id], rule.condition.threshold)
-      logger.debug(f"result of comparing rolling means with threshold:\n {rolling_mean[[id, 'results']]}")
-      
-      # put all of the trues (anomalies found) into a dataframe
-      anomaly_df = rolling_mean.loc[rolling_mean["results"] == True, [id]]
-      anomaly_df["start_time"] = anomaly_df.index - timedelta(seconds=duration)
-      anomaly_df["start_time"] = pd.to_datetime(anomaly_df["start_time"])
-      logger.info(f"anomaly_df:\n {anomaly_df}")
-
-      prev_end = anomaly_df.first_valid_index()
-      prev_start = anomaly_df["start_time"].get(prev_end)
-      prev_value = anomaly_df[id].get(prev_end)
-
-      # go through the series of anomalies and add them to the list
-      for index, row in anomaly_df.iterrows():
-        # if current anomaly's timeframe overlaps with previous, extend its timeframe by changing its start time and average the two values by weight (length of time)
-        if (prev_start <= row['start_time']) & (row['start_time'] <= prev_end):
-          weighted_average = calculate_weighted_avg(start1=prev_start, end1=prev_end, start2=row["start_time"], end2=index, val1=prev_value, val2=row[id])
-          anomaly_df.loc[index, "start_time"] = prev_start
-          anomaly_df.loc[index, id] = weighted_average
-
-        # else make an Anomaly from the previous information
-        else:
-          anomaly = Anomaly(
-              start_time=prev_start,
-              end_time=prev_end,
-              rule_id=rule.rule_id,
-              value=prev_value,
-              timeseriesid=id,
-              metadata=Metadata(
-                device=device_uri,
-                component_uri=component_uri
-              )
-            )
-          anomaly_list.append(anomaly.to_tuple())
-          logger.info(f"Anomaly appended. Current anomaly list: {anomaly_list}")
-
-        # update previous information to current information
-        prev_start = anomaly_df.loc[index, "start_time"]
-        prev_end = index
-        prev_value = anomaly_df.loc[index, id]
-
-      # append the last row of the anomaly_df to the anomaly list if there were anomalies
-      if not anomaly_df.empty:
-        row = anomaly_df.tail(1)
-        anomaly = Anomaly(
-          start_time=row["start_time"].get(row.index[0]),
-          end_time=row.index[0],
-          rule_id=rule.rule_id,
-          value=row[id].get(row.index[0]),
-          timeseriesid=id,
-          metadata=Metadata(
-            device=device_uri,
-            component=component_uri
-          )
-        )
-        anomaly_list.append(anomaly.to_tuple())
-        logger.info(f"Anomaly appended. Current anomaly list: {anomaly_list}")
+def analyze_data(graph: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
+  duration = rule.condition.duration
+  resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)
+  rounded_start = round_time(time=start_time, resample_size=resample_size)  # start time rounded to the nearest normalized time
+  throwaway_at_start = rounded_start + timedelta(seconds=int(duration)) # gets rid of the first few values of our table that aren't full windows
+  logger.info(f"throwaway time: {throwaway_at_start}")
+  # normalizes timestamps to intervals of resample size and compute the rolling mean
+  resampled = timeseries_data.groupby(level=0).resample(f'{resample_size}s', level=1).mean() 
+  logger.info(f"resampled data:\n {resampled}")
   
-  logger.info(f"Final anomaly list:\n{anomaly_list}")
+  rolling_mean = resampled.groupby(level=0).rolling(window=5).mean()
+  rolling_mean = rolling_mean.droplevel(level=0)
+  logger.info(f"df after rolling:\n{rolling_mean}")
+
+  # filter out rows where timestamp is before cutoff_time
+  rolling_mean = rolling_mean.loc[rolling_mean.index.get_level_values('ts') >= throwaway_at_start]
+  logger.info(f"df after throwing away:\n{rolling_mean}")
+
+  # Evaluate the equation
+  rolling_mean['results'] = rolling_mean.eval(rule.condition.equation)
+  logger.info(f"new_df with results column:\n{rolling_mean}")
+
+  # Put Trues in anomaly_df
+  anomaly_df = rolling_mean.loc[rolling_mean["results"] == True]
+  anomaly_df = anomaly_df.drop(columns=['results'])
+
+  anomaly_df.reset_index(level='ts', inplace=True)  # to make the index 'ts' a column
+  anomaly_df.rename(columns={"ts" : "end_time"}, inplace=True) 
+
+  anomaly_df["start_time"] = anomaly_df['end_time'] - timedelta(seconds=duration)
+  anomaly_df["start_time"] = pd.to_datetime(anomaly_df["start_time"])
+  logger.info(f"anomaly_df after adding start_time:\n {anomaly_df}")
+
+  anomaly_list = []
+  for component, new_df in anomaly_df.groupby(level=0):
+    # new_df = new_df[throwaway::]
+    logger.info(f"component: {component}")
+    logger.info(f"component df:\n {new_df}")
+    combine_mask = (new_df['start_time'] <= new_df['end_time'].shift(1))
+
+    group_key = (~combine_mask).cumsum()
+    grouped = new_df.groupby(group_key).agg({
+        'start_time': 'min',
+        'end_time': 'max'
+    }).reset_index(drop=True)
+    logger.info(f"new_df after combining:\n {grouped}")
+
+    device = graph.loc[graph["componentURI"] == component, "deviceURI"].values[0]
+    points = graph.loc[(graph["componentURI"] == component) & (graph["class"].isin(rule.sensor_types)), "point"].values
+    grouped['anomaly'] = grouped.apply(lambda row: create_anomaly(row=row, component=component, device=device, rule_id=rule.rule_id, points=points), axis=1)
+    logger.info(f"new_df after adding anomaly column:\n {grouped}")
+    anomaly_list.extend(grouped['anomaly'].tolist())
+
   return anomaly_list
 
+
+### MAKE SURE START_RULE WORKS RIGHT
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   """ Evaluates a rule against its threshold """
   while True:
@@ -111,14 +81,14 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
     overlap = (rule.condition.duration / resample_size - 1) * resample_size # accounts for rolling averages from end of last iteration of loop
     start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time) - datetime.timedelta(seconds=overlap)
     end_time = datetime.datetime.now()
-    sensor = f"https://brickschema.org/schema/Brick#{rule.sensor_type}"
+    sensors = rule.sensor_types
     logger.info(f"start_time: {start_time}, end_time: {end_time}")
 
     logger.info(f"*** LOADING TIMESERIES DATA FOR RULE {rule.rule_id} ***")
-    timeseries_df = load_timeseries(conn=conn, graphInfoDF=graphInfoDF, start_time=start_time, end_time=end_time, brick_class=sensor)
+    timeseries_df = load_timeseries(conn=conn, graph=graphInfoDF, start_time=start_time, end_time=end_time, brick_list=sensors)
 
     logger.info(f"*** ANALYZING DATA FOR RULE {rule.rule_id} ***")
-    anomaly_list = analyze_data(graph_info_df=graphInfoDF, timeseries_data=timeseries_df, rule=rule, start_time=start_time)
+    anomaly_list = analyze_data(graph=graphInfoDF, timeseries_data=timeseries_df, rule=rule, start_time=start_time)
 
     logger.info(f"*** APPENDING AND UPDATING ANOMALIES FOR RULE {rule.rule_id} ***")
     append_anomalies(conn=conn, anomaly_list=anomaly_list)

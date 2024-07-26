@@ -6,11 +6,10 @@ import pandas as pd
 import os
 from enum import Enum
 from typing import List
-import neo4j
-from neo4j import GraphDatabase
 import numpy as np
 from afdd.utils import load_graph
 from dotenv import load_dotenv
+from afdd.db import load_timeseries, load_rules, get_rules
 
 @dataclass
 class Metric(Enum):
@@ -73,18 +72,54 @@ combo_rule = Rule(
   )
 )
 
+
 # Example data
-components = ['Component A', 'Component B', 'Component A', 'Component B', 'Component A', 'Component B', 'Component A', 'Component B', 'Component A', 'Component B']
-timestamps = pd.date_range('2024-01-01', periods=10, freq='D')
-pm25_values = np.array([10, 10, 20, 20, 30, 30, 40, 40, 50, 50])
-pm10_values = np.array([10, 10, 20, 20, 30, 30, 40, 40, 50, 50])
+# componentURI = ['Component A', 'Component B', 'Component A', 'Component B', 'Component A', 'Component B', 'Component A', 'Component B', 'Component A', 'Component B']
+# timestamps = pd.date_range('2024-01-01', periods=10, freq='D')
+# pm25_values = np.array([10, 10, 20, 20, 30, 30, 40, 40, 50, 50])
+# pm10_values = np.array([1, 1, 2, 2, 3, 3, 4, 4, 5, 5])
 
-df = pd.DataFrame({'components': components, 'PM25_Level_Sensor': pm25_values, 'PM10_Level_Sensor': pm10_values}, index=timestamps)
-print("new_df before rolling: \n", df)
-df = df.groupby('components').rolling(2).sum()
-print("new_df after rolling: \n", df)
-print("new df indices: ", df.index.to_list())
 
-# Evaluate the equation
-df['results'] = df.eval(combo_rule.condition.equation)
-print("new_df with results column:\n", df)
+# # df = pd.DataFrame({'PM25_Level_Sensor': pm25_values, 'PM10_Level_Sensor': pm10_values}, index=[componentURI, timestamps])
+# df = pd.DataFrame({"componentURI": componentURI, "timestamps": timestamps, 'PM25_Level_Sensor': pm25_values, 'PM10_Level_Sensor': pm10_values})
+# df.set_index(['componentURI', 'timestamps'], inplace=True)
+# df.sort_index(level=0, inplace=True)
+
+# print(f"df before resampling: {df}")
+# grouped = df.groupby(level=0).resample('4d', level=1).mean()  
+# print(f"df after resampling: {grouped}")
+
+# rolling_mean = grouped.groupby(level=0, group_keys=False).rolling(window=2).sum()
+# rolling_mean = rolling_mean.droplevel(level=0)
+
+# print(f"df after rolling: {rolling_mean}")
+
+# cutoff_time = pd.Timestamp('2024-01-03')
+
+# # Filter out rows where timestamp is before cutoff_time
+# filtered_df = rolling_mean.loc[rolling_mean.index.get_level_values('timestamps') >= cutoff_time]
+
+# print(f"df after throwing away: {filtered_df}")
+
+# rolling_mean = rolling_mean.xs(pd.to_datetime("2024-01-03", format='%Y-%m-%d'), level=1)
+
+# # Example assuming 'rolling_mean' has a multi-index with levels ['componentURI', 'timestamps']
+# selected_date = pd.to_datetime("2024-01-03", format='%Y-%m-%d')
+# subset = rolling_mean.xs(selected_date, level='timestamps')
+
+
+postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
+# logger.info(f"Postgres connection string: {postgres_conn_string}")
+conn = psycopg.connect(postgres_conn_string)
+
+# Loads rules.json into postgres then gets rules from postgres
+load_rules(conn=conn, rules_json='rules.json')
+rules_list = get_rules(conn=conn)
+x = rules_list[0].sensor_types
+y = x[0]
+for rule in rules_list:
+  print(f"sensor list for each rule: {rule.sensor_types}")
+  print(f"type of sensor_types: {type(rule.sensor_types)}")
+
+graph = load_graph(devices='afdd/kaiterra_dcoffice.ttl')
+print(f"graph types: {graph.dtypes}")

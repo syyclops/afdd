@@ -40,7 +40,7 @@ def create_24h_data():
 
 async def start():
   coro_list = []
-  coro_list.append(append_sample_data(timeseriesid_co2_1, 10, 40, 60))
+  coro_list.append(append_sample_data(timeseriesid_co2_1, 10, 1000, 2000))
   coro_list.append(append_sample_data(timeseriesid_pm10, 10, 40, 60))
   coro_list.append(append_sample_data(timeseriesid_pm25, 10, 15, 30))
 
