@@ -268,4 +268,3 @@
     ns1:device_id "e4848531-911e-41f3-8b7a-4895a871e49b" ;
     ns1:isDeviceOf <https://syyclops.com/setty/dcoffice/component/kaiterrasensedgemini2> ;
     ns1:device_name "Developer Office Kaiterra Air Quality Sensor" .
-

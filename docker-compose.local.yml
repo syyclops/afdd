@@ -40,8 +40,23 @@ services:
     networks:
       - local
 
+  neo4j_with_plugins:
+    build:
+      context: .
+      dockerfile: ./neo4j/Dockerfile.neo4j
+    volumes:
+      - neo4jdata:/data
+      - neo4jlogs:/logs
+    ports:
+      - 7474:7474
+      - 7687:7687
+    networks:
+      - local
+
 networks:
   local:
 
 volumes:
   postgresqldata:
+  neo4jdata:
+  neo4jlogs:

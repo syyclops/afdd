@@ -23,7 +23,14 @@
 
 - A json file that contains two rules that detect high CO2 at different severities are loaded into the rules table in Postgres.
 
-- A graph of devices serialized in a .ttl file is loaded into a dataframe that contains information about the devices' points, and the points' Brick class and timeseries id. A point is a specific sensor within a device. For example, an air quality sensor might have the points CO2 sensor, temperature sensor, and humidity sensor.
+- Graph of components corresponding to a certain class (e.g. IAQ) is loaded into a dataframe from neo4j.
+
+
+point |class| timeseriesid | deviceURI | componentURI
+------|-----|--------------|-----------|------------------------
+https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2| https://brickschema.org/schema/Brick#CO2_Sensor |5e81563a-42ca-4137-9b36-f423a6f27a73-co2 | https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73 | https://syyclops.com/setty/dcoffice/component/examplekaiterrasensedge
+https://syyclops.com/setty/dcoffice/point/5e81563a-42ca-4137-9b36-f423a6f27a73-pm10 | https://brickschema.org/schema/Brick#PM10_Level_Sensor  | 5e81563a-42ca-4137-9b36-f423a6f27a73-pm10 | https://syyclops.com/setty/dcoffice/device/5e81563a-42ca-4137-9b36-f423a6f27a73 | https://syyclops.com/setty/dcoffice/component/examplekaiterrasensedge
+
 
 ### Anomaly Detection
 
