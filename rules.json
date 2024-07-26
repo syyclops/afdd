@@ -36,8 +36,8 @@
       "condition": {
          "equation": "PM10_Level_Sensor > 150",
          "metric": "average",
-         "duration": 84600,
-         "sleep_time": 84600,
+         "duration": 86400,
+         "sleep_time": 86400,
          "severity": "high"
       }
    },
@@ -50,8 +50,8 @@
       "condition": {
          "equation": "PM25_Level_Sensor > 35",
          "metric": "average",
-         "duration": 84600,
-         "sleep_time": 84600,
+         "duration": 86400,
+         "sleep_time": 86400,
          "severity": "high"
       }
    },
@@ -64,8 +64,8 @@
       "condition": {
          "equation": "(PM25_Level_Sensor + PM10_Level_Sensor) > 70",
          "metric": "average",
-         "duration": 84600,
-         "sleep_time": 84600,
+         "duration": 86400,
+         "sleep_time": 86400,
          "severity": "high"
       }
    }

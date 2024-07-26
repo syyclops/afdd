@@ -114,12 +114,3 @@ conn = psycopg.connect(postgres_conn_string)
 
 # Loads rules.json into postgres then gets rules from postgres
 load_rules(conn=conn, rules_json='rules.json')
-rules_list = get_rules(conn=conn)
-x = rules_list[0].sensor_types
-y = x[0]
-for rule in rules_list:
-  print(f"sensor list for each rule: {rule.sensor_types}")
-  print(f"type of sensor_types: {type(rule.sensor_types)}")
-
-graph = load_graph(devices='afdd/kaiterra_dcoffice.ttl')
-print(f"graph types: {graph.dtypes}")

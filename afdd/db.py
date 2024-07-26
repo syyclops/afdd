@@ -38,15 +38,14 @@ def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
 
 def append_past_anomalies(conn: Connection, anomaly_list: List[tuple]):
   """ Inserts a list of anomalies into postgres, checking if the anomaly already exists in the table. Used for past data analysis. """
-  query = """INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid, metadata)
-  SELECT %s, %s, %s, %s, %s, %s
+  query = """INSERT INTO anomalies (start_time, end_time, rule_id, points, metadata)
+  SELECT %s, %s, %s, %s, %s
   WHERE NOT EXISTS (
     SELECT 1 FROM anomalies
     WHERE start_time = %s
     AND end_time = %s
     AND rule_id = %s
-    AND value = %s
-    AND timeseriesid = %s
+    AND points = %s
     AND metadata = %s )"""
   try:
     with conn.cursor() as cur:

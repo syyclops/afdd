@@ -20,29 +20,32 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
   logger.info(f"*** STARTED ANALYZING PAST DATA FROM {start_time} to {end_time} ***")
 
   # create rule object by querying rules table using rule_id
-  query = """SELECT rule_id, name, sensor_type, description, condition FROM rules WHERE rule_id=%s"""
+  query = """SELECT * FROM rules WHERE rule_id=%s"""
 
   with conn.cursor() as cur:
     cur.execute(query, (rule_id,))
-    result = cur.fetchall()
-    result = result[0]
+    result = cur.fetchone()
+    print(f"query result: {result}")
+    # result = result[0]
+    print(type(result[5]))
   
   rule_object = Rule(
-    rule_id=rule_id, 
-    name=result[1], 
-    sensor_type=result[2], 
-    description=result[3], 
-    condition=Condition(
-      metric=Metric[result[4]['metric'].upper()], 
-      threshold=result[4]['threshold'], 
-      operator=result[4]['operator'], 
-      duration=result[4]['duration'], 
-      sleep_time=result[4]['sleep_time'],
-      severity=Severity[result[4]['severity'].upper()]))
-
-  brick_class = f"https://brickschema.org/schema/Brick#{rule_object.sensor_type}"
-  timeseries_df = load_timeseries(conn=conn, graphInfoDF=graph, start_time=start_time, end_time=end_time, brick_class=brick_class)
-  anomalies_list = analyze_data(graph_info_df=graph, start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
+          rule_id=result[0], 
+          name=result[1],
+          component_type=result[2],
+          sensor_types=result[3], 
+          description=result[4], 
+          condition=Condition(
+            equation=result[5]["equation"],
+            metric=Metric[result[5]['metric'].upper()], 
+            duration=result[5]['duration'], 
+            sleep_time=result[5]['sleep_time'],
+            severity=Severity[result[5]['severity'].upper()]
+            ))
+  
+  brick_class = rule_object.sensor_types
+  timeseries_df = load_timeseries(conn=conn, graph=graph, start_time=start_time, end_time=end_time, brick_list=brick_class)
+  anomalies_list = analyze_data(graph=graph, start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
 
   # convert the anomalies list of tuples to a list of dictionaries in order to make it a json file
   dict_list = []
@@ -51,8 +54,8 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
       "start_time": str(anomaly[0]),
       "end_time": str(anomaly[1]),
       "rule_id": anomaly[2],
-      "value": anomaly[3],
-      "timeseriesid": anomaly[4]
+      "points": anomaly[3],
+      "metadata": anomaly[4]
     }
     dict_list.append(dict)
   
