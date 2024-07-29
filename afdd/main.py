@@ -71,8 +71,6 @@ def analyze_data(graph: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule,
 
   return anomaly_list
 
-
-### MAKE SURE START_RULE WORKS RIGHT
 async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
   """ Evaluates a rule against its threshold """
   while True:
