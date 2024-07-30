@@ -6,13 +6,14 @@ import os
 import json
 from afdd.logger import logger
 from dotenv import load_dotenv
+from neo4j import GraphDatabase
 
 from afdd.models import Rule, Condition, Metric, Severity
-from afdd.db import load_timeseries, append_past_anomalies
+from afdd.db import load_timeseries, append_past_anomalies, load_graph_neo4j
 from afdd.main import analyze_data
 from afdd.utils import load_graph
 
-def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id: int, graph: Graph):
+def analyze_past_data(conn: Connection, driver: GraphDatabase.driver, start_time: str, end_time: str, rule_id: int, graph: Graph):
   """
   Creates a json file with all anomalies that happened between start and end time for a specified rule and appends them to Postgresql anomalies table
   """
@@ -43,8 +44,12 @@ def analyze_past_data(conn: Connection, start_time: str, end_time: str, rule_id:
             severity=Severity[result[5]['severity'].upper()]
             ))
   
-  brick_class = rule_object.sensor_types
-  timeseries_df = load_timeseries(conn=conn, graph=graph, start_time=start_time, end_time=end_time, brick_list=brick_class)
+  # Load graph data into dataframe
+  graph = load_graph_neo4j(driver=driver, component_class=rule_object.component_type)
+  logger.info(f"graph dataframe: \n {graph.to_string()}")
+
+  brick_list = rule_object.sensor_types
+  timeseries_df = load_timeseries(conn=conn, graph=graph, start_time=start_time, end_time=end_time, brick_list=brick_list)
   anomalies_list = analyze_data(graph=graph, start_time=start_time, timeseries_data=timeseries_df, rule=rule_object)
 
   # convert the anomalies list of tuples to a list of dictionaries in order to make it a json file
@@ -93,9 +98,15 @@ def main():
   postgres_conn_string = os.environ['POSTGRES_CONNECTION_STRING']
   conn = psycopg.connect(postgres_conn_string)
 
-  graph = load_graph(args.graph)
-
-  analyze_past_data(conn=conn, start_time=args.start_time, end_time=args.end_time, rule_id=args.rule_id, graph=graph)
+  neo4j_uri = os.environ['NEO4J_URI']
+  neo4j_user = os.environ['NEO4J_USER']
+  neo4j_password = os.environ['NEO4J_PASSWORD']
+  
+  neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password), max_connection_lifetime=200)
+  neo4j_driver.verify_connectivity()
+  
+  analyze_past_data(conn=conn, driver=neo4j_driver, start_time=args.start_time, end_time=args.end_time, rule_id=args.rule_id)
+  neo4j_driver.close()
 
 if __name__ == "__main__":
   main()
