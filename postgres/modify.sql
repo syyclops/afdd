@@ -1,5 +1,5 @@
 ALTER TABLE rules
-ADD component_type TEXT NOT NULL DEFAULT 'IAQ_Sensor_Equipment'
+ADD component_type TEXT NOT NULL DEFAULT 'IAQ_Sensor_Equipment';
 
 ALTER TABLE rules
 ADD sensor_types JSONB NOT NULL DEFAULT '[]';
@@ -8,7 +8,7 @@ update rules
 set sensor_types = CASE
     WHEN sensor_type = 'CO2_Sensor' THEN '["CO2_Sensor"]'::jsonb
     WHEN sensor_type = 'PM10_Level_Sensor' THEN '["PM10_Level_Sensor"]'::jsonb 
-    WHEN sensor_type = 'PM25_Level_Sensor' THEN '["PM25_Level_Sensor"]'::jsonb 
+    WHEN sensor_type = 'PM2.5_Level_Sensor' THEN '["PM25_Level_Sensor"]'::jsonb 
     ELSE sensor_types
 END;
 

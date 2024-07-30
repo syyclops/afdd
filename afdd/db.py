@@ -90,15 +90,15 @@ def get_rules(conn: Connection) -> List[Rule]:
         rule_list.append(Rule(
           rule_id=row[0], 
           name=row[1],
-          component_type=row[2],
-          sensor_types=row[3], 
-          description=row[4], 
+          component_type=row[4],
+          sensor_types=row[5], 
+          description=row[2], 
           condition=Condition(
-            equation=row[5]['equation'],
-            metric=Metric[row[5]['metric'].upper()], 
-            duration=row[5]['duration'], 
-            sleep_time=row[5]['sleep_time'],
-            severity=Severity[row[5]['severity'].upper()]
+            equation=row[3]['equation'],
+            metric=Metric[row[3]['metric'].upper()], 
+            duration=row[3]['duration'], 
+            sleep_time=row[3]['sleep_time'],
+            severity=Severity[row[3]['severity'].upper()]
             )))
       conn.commit()
       return rule_list

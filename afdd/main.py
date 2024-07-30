@@ -26,7 +26,7 @@ def analyze_data(graph: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule,
   resampled = timeseries_data.groupby(level=0).resample(f'{resample_size}s', level=1).mean() 
   logger.info(f"resampled data:\n {resampled}")
   
-  rolling_mean = resampled.groupby(level=0).rolling(window=5).mean()
+  rolling_mean = resampled.groupby(level=0).rolling(window=5, min_periods=1).mean()
   rolling_mean = rolling_mean.droplevel(level=0)
   logger.info(f"df after rolling:\n{rolling_mean}")
 

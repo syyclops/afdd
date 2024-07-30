@@ -13,7 +13,7 @@ from afdd.db import load_timeseries, append_past_anomalies, load_graph_neo4j
 from afdd.main import analyze_data
 from afdd.utils import load_graph
 
-def analyze_past_data(conn: Connection, driver: GraphDatabase.driver, start_time: str, end_time: str, rule_id: int, graph: Graph):
+def analyze_past_data(conn: Connection, driver: GraphDatabase.driver, start_time: str, end_time: str, rule_id: int):
   """
   Creates a json file with all anomalies that happened between start and end time for a specified rule and appends them to Postgresql anomalies table
   """
@@ -26,22 +26,22 @@ def analyze_past_data(conn: Connection, driver: GraphDatabase.driver, start_time
   with conn.cursor() as cur:
     cur.execute(query, (rule_id,))
     result = cur.fetchone()
-    print(f"query result: {result}")
+    # print(f"query result: {result}")
     # result = result[0]
-    print(type(result[5]))
+    # print(type(result[5]))
   
   rule_object = Rule(
           rule_id=result[0], 
           name=result[1],
-          component_type=result[2],
-          sensor_types=result[3], 
-          description=result[4], 
+          component_type=result[4],
+          sensor_types=result[5], 
+          description=result[2], 
           condition=Condition(
-            equation=result[5]["equation"],
-            metric=Metric[result[5]['metric'].upper()], 
-            duration=result[5]['duration'], 
-            sleep_time=result[5]['sleep_time'],
-            severity=Severity[result[5]['severity'].upper()]
+            equation=result[3]["equation"],
+            metric=Metric[result[3]['metric'].upper()], 
+            duration=result[3]['duration'], 
+            sleep_time=result[3]['sleep_time'],
+            severity=Severity[result[3]['severity'].upper()]
             ))
   
   # Load graph data into dataframe
@@ -80,7 +80,6 @@ def main():
   parser.add_argument("--start_time", required=True, help="start time in iso format")
   parser.add_argument("--end_time", required=True, help="end time in iso format")
   parser.add_argument("--rule_id", required=True, help="id of desired rule to be run")
-  parser.add_argument("--graph", required=True, help="name of ttl file containing points graph")
   args = parser.parse_args()
 
   env_files = {
