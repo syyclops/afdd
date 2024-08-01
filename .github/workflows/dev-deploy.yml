@@ -39,9 +39,8 @@ jobs:
           location: "east us"
           cpu: 1
           memory: 2
-          env: 
-            POSTGRES_CONNECTION_STRING: ${{ secrets.POSTGRES_CONNECTION_STRING_DEV }}
-            NEO4J_URI: ${{ secrets.NEO4J_URI_DEV }}
-            NEO4J_USER: ${{ secrets.NEO4J_USER_DEV }}
-            NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD_DEV }}
+          POSTGRES_CONNECTION_STRING: ${{ secrets.POSTGRES_CONNECTION_STRING_DEV }}
+          NEO4J_URI: ${{ secrets.NEO4J_URI_DEV }}
+          NEO4J_USER: ${{ secrets.NEO4J_USER_DEV }}
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD_DEV }}
 
