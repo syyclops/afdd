@@ -3,6 +3,9 @@ from typing import List
 import pandas as pd
 from psycopg import Connection
 import json
+import neo4j
+from neo4j import GraphDatabase
+from afdd.utils import strip_brick_prefix
 
 from afdd.models import PointReading, Rule, Condition, Metric, Severity
 from afdd.logger import logger
@@ -28,7 +31,7 @@ def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
 
 def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
   """ Inserts a list of anomalies into postgres. Used for real time analysis. """
-  query = "INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid, metadata) VALUES (%s, %s, %s, %s, %s, %s)"
+  query = "INSERT INTO anomalies (start_time, end_time, rule_id, points, metadata) VALUES (%s, %s, %s, %s, %s)"
   try:
     with conn.cursor() as cur:
       cur.executemany(query, anomaly_list)
@@ -38,15 +41,14 @@ def append_anomalies(conn: Connection, anomaly_list: List[tuple]):
 
 def append_past_anomalies(conn: Connection, anomaly_list: List[tuple]):
   """ Inserts a list of anomalies into postgres, checking if the anomaly already exists in the table. Used for past data analysis. """
-  query = """INSERT INTO anomalies (start_time, end_time, rule_id, value, timeseriesid, metadata)
-  SELECT %s, %s, %s, %s, %s, %s
+  query = """INSERT INTO anomalies (start_time, end_time, rule_id, points, metadata)
+  SELECT %s, %s, %s, %s, %s
   WHERE NOT EXISTS (
     SELECT 1 FROM anomalies
     WHERE start_time = %s
     AND end_time = %s
     AND rule_id = %s
-    AND value = %s
-    AND timeseriesid = %s
+    AND points = %s
     AND metadata = %s )"""
   try:
     with conn.cursor() as cur:
@@ -57,19 +59,18 @@ def append_past_anomalies(conn: Connection, anomaly_list: List[tuple]):
   except Exception as e:
     raise e
   
-  
 def load_rules(conn: Connection, rules_json: str) -> None:
   """ Loads rules into Postgres from a json file """
   with open(rules_json) as file:
     rules_list = json.load(file)
 
-  rules_list = [(rule["rule_id"], rule["name"], rule["sensor_type"], rule["description"], json.dumps(rule["condition"])) for rule in rules_list]
+  rules_list = [(rule["rule_id"], rule["name"], rule["component_type"], json.dumps(rule["sensor_types"]), rule["description"], json.dumps(rule["condition"])) for rule in rules_list]
   for rule in rules_list:
     with conn.cursor() as cur:
       id_exists_query = f"SELECT * FROM rules WHERE rule_id = {rule[0]}"
       cur.execute(id_exists_query)
       if not cur.fetchall():
-        insert_query = "INSERT INTO rules (rule_id, name, sensor_type, description, condition) VALUES (%s, %s, %s, %s, %s)"
+        insert_query = "INSERT INTO rules (rule_id, name, component_type, sensor_types, description, condition) VALUES (%s, %s, %s, %s, %s, %s)"
         cur.execute(insert_query, rule)
       else:
         logger.info(f"Rule_id of, {rule}, already exists. ")
@@ -88,37 +89,39 @@ def get_rules(conn: Connection) -> List[Rule]:
       for row in rows:
         rule_list.append(Rule(
           rule_id=row[0], 
-          name=row[1], 
-          sensor_type=row[2], 
-          description=row[3], 
+          name=row[1],
+          component_type=row[4],
+          sensor_types=row[5], 
+          description=row[2], 
           condition=Condition(
-            metric=Metric[row[4]['metric'].upper()], 
-            threshold=row[4]['threshold'], 
-            operator=row[4]['operator'], 
-            duration=row[4]['duration'], 
-            sleep_time=row[4]['sleep_time'],
-            severity=Severity[row[4]['severity'].upper()]
-        )))
+            equation=row[3]['equation'],
+            metric=Metric[row[3]['metric'].upper()], 
+            duration=row[3]['duration'], 
+            sleep_time=row[3]['sleep_time'],
+            severity=Severity[row[3]['severity'].upper()]
+            )))
       conn.commit()
       return rule_list
     
   except Exception as e:
     raise e
 
-
-def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str, end_time: str, brick_class: str) -> pd.DataFrame:
+def load_timeseries(conn: Connection, graph: pd.DataFrame, start_time: str, end_time: str, brick_list: List[str]) -> pd.DataFrame:
   """
-  Creates a dataframe containing the timeseries data between given start and end time for given brick class.
-  Timestamp is the index, the columns contain the data of each timeseriesid.
+  Creates a dataframe containing the timeseries data between given start and end time for given brick classes.
+  The brick classes should just be passed in as the ending of the URI (everything after https://brickschema.org/schema/Brick#).
+  It returns a multi-indexed dataframe where the level 0 index is component, the level 1 index is timestamp, and each column is a brick class.
   """
   # gets all of the timeseriesids that correspond to the given brick class
-  timeseries_ids = graphInfoDF.loc[graphInfoDF['class'] == URIRef(brick_class), "timeseriesid"].to_list()
+  all_ts_ids = []
+  for brick_class in brick_list:
+    timeseries_ids = graph.loc[graph['class'] == brick_class, "timeseriesid"].to_list()
+    timeseries_ids = [str(id).strip() for id in timeseries_ids]
+    all_ts_ids.extend(timeseries_ids)
 
-  # converting timeseriesids to strings instead of literals so we can fetch them from the database
-  timeseries_ids = [str(id) for id in timeseries_ids]
-
+  logger.info(f"all timeseries ids that correspond with the brick classes {brick_list}: {all_ts_ids}")
   # Generating placeholders for SQL IN clause
-  placeholders = ', '.join(['%s' for _ in timeseries_ids])
+  placeholders = ', '.join(['%s' for _ in all_ts_ids])
 
   query = f"""
     SELECT ts, value, timeseriesid
@@ -128,7 +131,8 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
   """
 
   with conn.cursor() as cur:
-    cur.execute(query, timeseries_ids + [start_time, end_time])
+    parameters = (*all_ts_ids, start_time, end_time)
+    cur.execute(query, parameters)
     rows = cur.fetchall()
     
     # make a dataframe out of the query results
@@ -138,12 +142,37 @@ def load_timeseries(conn: Connection, graphInfoDF: pd.DataFrame, start_time: str
     # convert the ts column to datetimes
     df['ts'] = pd.to_datetime(df['ts'])
     df.drop_duplicates(inplace=True)
-    
+
+    # strip whitespaces so that merge can match timeseriesids
+    graph["timeseriesid"] = graph["timeseriesid"].str.strip()
+    df['timeseriesid'] = df['timeseriesid'].str.strip()
+
+    # merge ts dataframe and information from graph by matching up timeseriesid
+    timeseries_df = pd.merge(df, graph[["class", "timeseriesid", "componentURI"]], on="timeseriesid", how="left")
+    logger.info(f"timeseriesdf merged: \n{timeseries_df}")
+
     # pivot the df to have ts as the index, timeseriesid as the columns and value as the values
-    df_pivoted = df.pivot(index='ts', columns='timeseriesid', values='value')
+    df_pivoted = timeseries_df.pivot_table(index=['componentURI', 'ts'], columns='class', values='value', aggfunc="first")
     df_pivoted.sort_index(inplace=True)
 
     conn.commit()
-    logger.info(f"pivoted ts df: \n{df_pivoted}")
+    logger.info(f"pivoted ts df: \n{df_pivoted.to_string()}")
 
   return df_pivoted
+
+def load_graph_neo4j(driver: GraphDatabase.driver, component_class: str) -> pd.DataFrame:
+  """ Loads all necessary sensor information for the given component for a neo4j graph """
+
+  query = """
+  MATCH (c:Class) WHERE c.uri CONTAINS $component_class
+  MATCH (c)-[:HAS_BRICK_CLASS]-(comp:Component)
+  MATCH (comp)-[:hasPoint]-(p:Point)
+  MATCH (comp)-[:isDeviceOf]-(d:Device)
+  MATCH (p)-[:HAS_BRICK_CLASS]-(class: Class)
+  MATCH (p)-[:hasExternalReference]-(t:TimeseriesReference)
+  RETURN p.uri AS point, class.uri AS class, t.hasTimeseriesId AS timeseriesid, d.uri AS deviceURI, comp.uri AS componentURI
+  """
+  
+  df = driver.execute_query(query_=query, component_class=component_class, database_="neo4j", result_transformer_=neo4j.Result.to_df)
+  df['class'] = df['class'].apply(strip_brick_prefix)
+  return df

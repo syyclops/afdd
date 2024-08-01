@@ -2,12 +2,12 @@
    {
       "rule_id": 1,
       "name": "CO2 High",
-      "sensor_type": "CO2_Sensor",
-      "description": "Triggers when average CO2 level exceeds 1000 ppm for 10 minute",
+      "component_type": "IAQ_Sensor_Equipment",
+      "sensor_types": ["CO2_Sensor"],
+      "description": "Triggers when average CO2 level is between 1000 and 1500 ppm for 10 minutes",
       "condition": {
+         "equation": "1000 < CO2_Sensor < 1500",
          "metric": "average",
-         "threshold": [1000, 1500],
-         "operator": "in",
          "duration": 600,
          "sleep_time": 1800,
          "severity": "high"
@@ -16,42 +16,56 @@
    {
       "rule_id": 2,
       "name": "CO2 Critical",
-      "sensor_type": "CO2_Sensor",
-      "description": "Triggers when average CO2 level exceeds 1500 ppm for 10 minute",
+      "component_type": "IAQ_Sensor_Equipment",
+      "sensor_types": ["CO2_Sensor"],
+      "description": "Triggers when average CO2 level exceeds 1500 ppm for 10 minutes",
       "condition": {
+         "equation": "CO2_Sensor > 1500",
          "metric": "average",
-         "threshold": 1500,
-         "operator": ">",
          "duration": 600,
          "sleep_time": 1800,
-         "severity": "high"
+         "severity": "critical"
       }
    },
    {
       "rule_id": 3,
       "name": "High PM10 24 Hour",
-      "sensor_type": "PM10_Level_Sensor",
-      "description": "Triggers when average PM10 levels are above 45 micrograms/meter^3 for 24 hours",
+      "component_type": "IAQ_Sensor_Equipment",
+      "sensor_types": ["PM10_Level_Sensor"],
+      "description": "Triggers when average PM10 levels are above 150 micrograms/meter^3 for 24 hours",
       "condition": {
+         "equation": "PM10_Level_Sensor > 150",
          "metric": "average",
-         "threshold": 150,
-         "operator": ">",
-         "duration": 84600,
-         "sleep_time": 84600,
+         "duration": 86400,
+         "sleep_time": 86400,
          "severity": "high"
       }
    },
    {
       "rule_id": 4,
       "name": "High PM2.5 24 Hour",
-      "sensor_type": "PM2.5_Level_Sensor",
-      "description": "Triggers when average PM2.5 levels are above 15 micrograms/meter^3 for 24 hours",
+      "component_type": "IAQ_Sensor_Equipment",
+      "sensor_types": ["PM25_Level_Sensor"],
+      "description": "Triggers when average PM2.5 levels are above 35 micrograms/meter^3 for 24 hours",
       "condition": {
+         "equation": "PM25_Level_Sensor > 35",
          "metric": "average",
-         "threshold": 35,
-         "operator": ">",
-         "duration": 84600,
-         "sleep_time": 84600,
+         "duration": 86400,
+         "sleep_time": 86400,
+         "severity": "high"
+      }
+   },
+   {
+      "rule_id": 5,
+      "name": "PM Sum Rule (TEST)",
+      "component_type": "IAQ_Sensor_Equipment",
+      "sensor_types": ["PM25_Level_Sensor", "PM10_Level_Sensor"],
+      "description": "Triggers when pm10 counts and pm2.5 counts combined average over 70 micrograms per cubic meter for 1 minute. This rule is not based on real standards.",
+      "condition": {
+         "equation": "(PM25_Level_Sensor + PM10_Level_Sensor) > 70",
+         "metric": "average",
+         "duration": 86400,
+         "sleep_time": 86400,
          "severity": "high"
       }
    }
