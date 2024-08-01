@@ -1,6 +1,8 @@
-from rdflib import Graph
+from rdflib import Graph, Literal, URIRef
 from datetime import datetime, timedelta, timezone
 import pandas as pd
+from afdd.models import Anomaly, Metadata
+from typing import List
 
 def load_graph(devices: str) -> pd.DataFrame:
   """ Load our sample devices and points, takes in .ttl file of device info """
@@ -28,6 +30,7 @@ def load_graph(devices: str) -> pd.DataFrame:
     }
   }
   """
+  
   # query the graph for all of the points that were loaded on
   results = g.query(query)
 
@@ -43,7 +46,16 @@ def load_graph(devices: str) -> pd.DataFrame:
   # make the result dictionary into a dataframe
   graphInfoDF = pd.DataFrame(dict)
 
+  graphInfoDF['class'] = graphInfoDF['class'].apply(strip_brick_prefix)
+
   return graphInfoDF
+
+def strip_brick_prefix(uri: Literal):
+  """ Gets rid of brick prefix from a URI and removes periods so the Brick class can be used as a variable """
+  uri = str(uri)
+  parts = uri.split("#")
+  ending = parts[-1].replace(".", "")
+  return ending
 
 def round_time(time: str | datetime, resample_size: int) -> datetime:
   """
@@ -68,21 +80,6 @@ def round_time(time: str | datetime, resample_size: int) -> datetime:
   
   return rounded_datetime
 
-# series comparison helpers using vectorized operation
-def series_in_range(data, threshold: tuple):
-  return data.between(threshold[0], threshold[1])
-
-series_symbol_map = {
-    '>': pd.Series.gt,
-    '>=': pd.Series.ge,
-    '<': pd.Series.lt, 
-    '<=': pd.Series.le,
-    'in': series_in_range
-    }
-
-def series_comparator(op, data, threshold):
-  return series_symbol_map[op](data, threshold)
-
 def calculate_weighted_avg(start1: datetime, end1: datetime, start2: datetime, end2: datetime, val1: float, val2: float):
   """
   Calculates weighted average of two values based on their respective timedeltas
@@ -92,3 +89,16 @@ def calculate_weighted_avg(start1: datetime, end1: datetime, start2: datetime, e
   result = (val1*difference1 + val2*difference2)/(difference1 + difference2)
   
   return result
+
+def create_anomaly(row, component, device, rule_id: int, points: List[URIRef]) -> List[tuple]:
+  """ Helper method to create anomaly objects and cast them to tuples given a row from the anomaly dataframe """
+  anomaly = Anomaly(
+    start_time=row['start_time'],
+    end_time=row['end_time'],
+    rule_id=rule_id,
+    points=points,
+    metadata=Metadata(device=device,
+                      component=component)
+    )
+  anomaly_tuple = anomaly.to_tuple()
+  return anomaly_tuple
