@@ -5,6 +5,7 @@ from psycopg import Connection
 import os
 import asyncio
 import logging
+from urllib.parse import urlparse
 
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
@@ -170,9 +171,10 @@ def main():
     postgres_conn_string = os.environ["POSTGRES_CONNECTION_STRING"]
     conn = psycopg.connect(postgres_conn_string)
 
+    neo4j_conn_string = urlparse(os.environ["NEO4J_URL"])
     neo4j_driver = GraphDatabase.driver(
-        os.environ["NEO4J_URI"],
-        auth=(os.environ["NEO4J_USER"], os.environ["NEO4J_PASSWORD"]),
+        f"{neo4j_conn_string.scheme}://{neo4j_conn_string.hostname}:{neo4j_conn_string.port}",
+        auth=(neo4j_conn_string.username, neo4j_conn_string.password),
         max_connection_lifetime=200,
     )
     neo4j_driver.verify_connectivity()
