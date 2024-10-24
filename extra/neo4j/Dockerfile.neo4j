@@ -6,7 +6,7 @@ WORKDIR /var/lib/neo4j
 # COPY /neo4j/plugins/apoc-*.jar plugins/
 # COPY /neo4j/plugins/neosemantics-*.jar plugins/
 
-COPY /neo4j/apoc.conf conf/
+COPY /extra/neo4j/apoc.conf conf/
 
 ENV NEO4J_apoc_export_file_enabled=true \
     NEO4J_apoc_import_file_enabled=true \
