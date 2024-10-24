@@ -1,6 +1,5 @@
 venv/
-.env
-.env.dev
+.env*
 __pycache__/
 logs/
 tests/test_loading.py
