@@ -23,7 +23,6 @@ from afdd.db import (
     load_graph_data,
 )
 
-
 def analyze_data(graph: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
     duration = rule.condition.duration
     resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)

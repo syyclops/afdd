@@ -4,8 +4,7 @@ import re
 
 from rdflib import URIRef, Literal
 from afdd.main import *
-from timescale import TimeseriesData, PointReading
-
+from afdd.models import TimeseriesData, PointReading
 
 def test_load_graph_success():
     """

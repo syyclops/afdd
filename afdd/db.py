@@ -10,7 +10,6 @@ from afdd.utils import strip_brick_prefix
 from afdd.models import PointReading, Rule, Condition, Metric, Severity
 from afdd.logger import logger
 
-
 def insert_timeseries(conn: Connection, data: List[PointReading]) -> None:
     """Insert a list of timeseries data into the timeseries table. Used for creating sample data."""
     query = "INSERT INTO timeseries (ts, value, timeseriesid) VALUES "
@@ -249,6 +248,10 @@ def load_graph_data(driver: GraphDatabase.driver, rules_list) -> pd.DataFrame:
     # Get unique component classes from rules
     component_classes = {rule.component_type for rule in rules_list}
     logger.info(f"Loading data for components: {component_classes}")
+
+    if not component_classes:
+        logger.info("No component classes found in rules_list.")
+        return pd.DataFrame()
 
     # Load and process data
     try:
