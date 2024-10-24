@@ -2,7 +2,7 @@ version: "3.8"
 services:
   pg:
     build:
-      context: ./postgres
+      context: ./extra/postgres
       dockerfile: Dockerfile.pg
     volumes:
       - postgresqldata:/var/lib/postgresql/data
@@ -17,7 +17,7 @@ services:
   sample-data:
     build:
       context: .
-      dockerfile: ./sample_data/Dockerfile
+      dockerfile: ./extra/sample_data/Dockerfile
     env_file:
       - .env
     environment:
@@ -30,7 +30,7 @@ services:
   neo4j_with_plugins:
     build:
       context: .
-      dockerfile: ./neo4j/Dockerfile.neo4j
+      dockerfile: ./extra/neo4j/Dockerfile.neo4j
     volumes:
       - neo4jdata:/data
       - neo4jlogs:/logs
