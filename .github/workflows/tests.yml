@@ -21,6 +21,8 @@ jobs:
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
+        volumes:
+          - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -35,7 +37,7 @@ jobs:
           - 7687:7687
           - 7474:7474
         options: >-
-          --health-cmd "curl -f http://localhost:7474"
+          --health-cmd "cypher-shell -u neo4j -p neo4j-password 'RETURN 1'"
           --health-interval 30s
           --health-timeout 10s
           --health-retries 3
