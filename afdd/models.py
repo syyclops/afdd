@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from typing import List
-from typing import TypedDict
 from enum import Enum
 import json
-from rdflib import URIRef
 import numpy as np
 
 

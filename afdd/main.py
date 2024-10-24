@@ -24,24 +24,14 @@ from afdd.db import (
 )
 
 
-def analyze_data(
-    graph: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str
-) -> List[tuple]:
+def analyze_data(graph: pd.DataFrame, timeseries_data: pd.DataFrame, rule: Rule, start_time: str) -> List[tuple]:
     duration = rule.condition.duration
-    resample_size = int(
-        duration * 0.25
-    )  # increment size of the rolling average (how far it's going to roll each time)
-    rounded_start = round_time(
-        time=start_time, resample_size=resample_size
-    )  # start time rounded to the nearest normalized time
-    throwaway_at_start = rounded_start + timedelta(
-        seconds=int(duration)
-    )  # gets rid of the first few values of our table that aren't full windows
+    resample_size = int(duration * 0.25)  # increment size of the rolling average (how far it's going to roll each time)
+    rounded_start = round_time(time=start_time, resample_size=resample_size)  # start time rounded to the nearest normalized time
+    throwaway_at_start = rounded_start + timedelta(seconds=int(duration))  # gets rid of the first few values of our table that aren't full windows
     logger.info(f"throwaway time: {throwaway_at_start}")
     # normalizes timestamps to intervals of resample size and compute the rolling mean
-    resampled = (
-        timeseries_data.groupby(level=0).resample(f"{resample_size}s", level=1).mean()
-    )
+    resampled = timeseries_data.groupby(level=0).resample(f"{resample_size}s", level=1).mean()
     logger.info(f"resampled data:\n {resampled}")
 
     rolling_mean = resampled.groupby(level=0).rolling(window=5, min_periods=1).mean()
@@ -49,9 +39,7 @@ def analyze_data(
     logger.info(f"df after rolling:\n{rolling_mean}")
 
     # filter out rows where timestamp is before cutoff_time
-    rolling_mean = rolling_mean.loc[
-        rolling_mean.index.get_level_values("ts") >= throwaway_at_start
-    ]
+    rolling_mean = rolling_mean.loc[rolling_mean.index.get_level_values("ts") >= throwaway_at_start]
     logger.info(f"df after throwing away:\n{rolling_mean}")
 
     # Evaluate the equation
@@ -77,17 +65,12 @@ def analyze_data(
         combine_mask = new_df["start_time"] <= new_df["end_time"].shift(1)
 
         group_key = (~combine_mask).cumsum()
-        grouped = (
-            new_df.groupby(group_key)
-            .agg({"start_time": "min", "end_time": "max"})
-            .reset_index(drop=True)
-        )
+        grouped = new_df.groupby(group_key).agg({"start_time": "min", "end_time": "max"}).reset_index(drop=True)
         logger.info(f"new_df after combining:\n {grouped}")
 
         device = graph.loc[graph["componentURI"] == component, "deviceURI"].values[0]
         points = graph.loc[
-            (graph["componentURI"] == component)
-            & (graph["class"].isin(rule.sensor_types)),
+            (graph["componentURI"] == component) & (graph["class"].isin(rule.sensor_types)),
             "point",
         ].values
         grouped["anomaly"] = grouped.apply(
@@ -115,14 +98,8 @@ async def start_rule(conn: Connection, graphInfoDF: pd.DataFrame, rule: Rule):
         logger.info(f"*** STARTING ANALYSIS OF RULE {rule.rule_id} ***")
 
         resample_size = int(rule.condition.duration * 0.25)
-        overlap = (
-            rule.condition.duration / resample_size - 1
-        ) * resample_size  # accounts for rolling averages from end of last iteration of loop
-        start_time = (
-            datetime.datetime.now()
-            - datetime.timedelta(seconds=rule.condition.sleep_time)
-            - datetime.timedelta(seconds=overlap)
-        )
+        overlap = (rule.condition.duration / resample_size - 1) * resample_size  # accounts for rolling averages from end of last iteration of loop
+        start_time = datetime.datetime.now() - datetime.timedelta(seconds=rule.condition.sleep_time) - datetime.timedelta(seconds=overlap)
         end_time = datetime.datetime.now()
         sensors = rule.sensor_types
         logger.info(f"start_time: {start_time}, end_time: {end_time}")
@@ -164,9 +141,7 @@ async def start(conn: Connection, graphInfoDF: pd.DataFrame, rules_list: List[Ru
 def main():
     logging.info("")  # makes logs show up in docker?
     load_dotenv(override=True)
-    logger.info(
-        "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    )
+    logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
     postgres_conn_string = os.environ["POSTGRES_CONNECTION_STRING"]
     conn = psycopg.connect(postgres_conn_string)

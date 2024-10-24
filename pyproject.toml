@@ -22,3 +22,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 afdd = "afdd.main:main"
 sample_data = "sample_data.create_sample_data:main"
+
+[tool.black]
+line-length = 150

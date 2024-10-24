@@ -24,9 +24,7 @@ def analyze_past_data(
     """
     Creates a json file with all anomalies that happened between start and end time for a specified rule and appends them to Postgresql anomalies table
     """
-    logger.info(
-        "---------------------------------------------------------------------------------"
-    )
+    logger.info("---------------------------------------------------------------------------------")
     logger.info(f"*** STARTED ANALYZING PAST DATA FROM {start_time} to {end_time} ***")
 
     # create rule object by querying rules table using rule_id
@@ -98,9 +96,7 @@ def analyze_past_data(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Analyze past timeseries data for anomalies."
-    )
+    parser = argparse.ArgumentParser(description="Analyze past timeseries data for anomalies.")
     parser.add_argument("--start_time", required=True, help="start time in iso format")
     parser.add_argument("--end_time", required=True, help="end time in iso format")
     parser.add_argument("--rule_id", required=True, help="id of desired rule to be run")
@@ -122,9 +118,7 @@ def main():
     neo4j_user = os.environ["NEO4J_USER"]
     neo4j_password = os.environ["NEO4J_PASSWORD"]
 
-    neo4j_driver = GraphDatabase.driver(
-        neo4j_uri, auth=(neo4j_user, neo4j_password), max_connection_lifetime=200
-    )
+    neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password), max_connection_lifetime=200)
     neo4j_driver.verify_connectivity()
 
     analyze_past_data(

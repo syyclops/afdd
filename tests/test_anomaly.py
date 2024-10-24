@@ -39,9 +39,7 @@ def test_load_graph_success():
         device_udid = device[1]
         device_df = df.loc[df["device name"] == device_name]
         for index, row in device_df.iterrows():
-            assert (row["timeseriesid"].startswith(Literal(device_udid))) and (
-                row["device name"] == Literal(device_name)
-            ) == True
+            assert (row["timeseriesid"].startswith(Literal(device_udid))) and (row["device name"] == Literal(device_name)) == True
 
 
 def test_load_graph_invalid_inputs():
@@ -51,10 +49,7 @@ def test_load_graph_invalid_inputs():
 
     with pytest.raises(TypeError) as error:
         df = load_graph(facility_uri="facility_uri", device_list=(2, 3, 4))
-    assert (
-        str(error.value)
-        == "Device list must be a list of tuples in the format (device_name, device_udid). "
-    )
+    assert str(error.value) == "Device list must be a list of tuples in the format (device_name, device_udid). "
 
     with pytest.raises(TypeError) as error:
         df = load_graph(facility_uri="facility_uri", device_list=[(2, 3)])
@@ -62,10 +57,7 @@ def test_load_graph_invalid_inputs():
 
     with pytest.raises(Exception) as error:
         df = load_graph(facility_uri="facility_uri", device_list=[("1", "2", "3")])
-    assert (
-        str(error.value)
-        == "Device list must be a list of tuples in the format (device_name, device_udid). "
-    )
+    assert str(error.value) == "Device list must be a list of tuples in the format (device_name, device_udid). "
 
 
 def test_co2_rule():
@@ -85,15 +77,9 @@ def create_dataframe():
             URIRef("https://brickschema.org/schema/Brick#CO2_Sensor"),
         ],
         "point": [
-            URIRef(
-                "https://syyclops.com/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2"
-            ),
-            URIRef(
-                "https://syyclops.com/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-temperature"
-            ),
-            URIRef(
-                "https://syyclops.com/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2"
-            ),
+            URIRef("https://syyclops.com/example/example/point/9cdcab62-892c-46c8-b3d2-3d525512576a-co2"),
+            URIRef("https://syyclops.com/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-temperature"),
+            URIRef("https://syyclops.com/example/example/point/5e81563a-42ca-4137-9b36-f423a6f27a73-co2"),
         ],
         "timeseriesid": [
             Literal("9cdcab62-892c-46c8-b3d2-3d525512576a-co2"),

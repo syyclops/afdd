@@ -84,7 +84,9 @@ def load_rules(conn: Connection, rules_json: str) -> None:
             id_exists_query = f"SELECT * FROM rules WHERE rule_id = {rule[0]}"
             cur.execute(id_exists_query)
             if not cur.fetchall():
-                insert_query = "INSERT INTO rules (rule_id, name, component_type, sensor_types, description, condition) VALUES (%s, %s, %s, %s, %s, %s)"
+                insert_query = (
+                    "INSERT INTO rules (rule_id, name, component_type, sensor_types, description, condition) VALUES (%s, %s, %s, %s, %s, %s)"
+                )
                 cur.execute(insert_query, rule)
             else:
                 logger.info(f"Rule_id of, {rule}, already exists. ")
@@ -140,15 +142,11 @@ def load_timeseries(
     # gets all of the timeseriesids that correspond to the given brick class
     all_ts_ids = []
     for brick_class in brick_list:
-        timeseries_ids = graph.loc[
-            graph["class"] == brick_class, "timeseriesid"
-        ].to_list()
+        timeseries_ids = graph.loc[graph["class"] == brick_class, "timeseriesid"].to_list()
         timeseries_ids = [str(id).strip() for id in timeseries_ids]
         all_ts_ids.extend(timeseries_ids)
 
-    logger.info(
-        f"all timeseries ids that correspond with the brick classes {brick_list}: {all_ts_ids}"
-    )
+    logger.info(f"all timeseries ids that correspond with the brick classes {brick_list}: {all_ts_ids}")
     # Generating placeholders for SQL IN clause
     placeholders = ", ".join(["%s" for _ in all_ts_ids])
 
@@ -200,9 +198,7 @@ def load_timeseries(
     return df_pivoted
 
 
-def load_graph_neo4j(
-    driver: GraphDatabase.driver, component_class: str
-) -> pd.DataFrame:
+def load_graph_neo4j(driver: GraphDatabase.driver, component_class: str) -> pd.DataFrame:
     """Loads all necessary sensor information for the given component for a neo4j graph"""
 
     query = """
@@ -225,9 +221,7 @@ def load_graph_neo4j(
     return df
 
 
-def load_component_data(
-    driver: GraphDatabase.driver, component_class: str
-) -> pd.DataFrame:
+def load_component_data(driver: GraphDatabase.driver, component_class: str) -> pd.DataFrame:
     """Load data for a single component class."""
     query = """
     MATCH (c:Class) WHERE c.uri CONTAINS $component_class
@@ -259,9 +253,7 @@ def load_graph_data(driver: GraphDatabase.driver, rules_list) -> pd.DataFrame:
     # Load and process data
     try:
         # Load all component data into a single dataframe
-        dfs = [
-            load_component_data(driver, comp_class) for comp_class in component_classes
-        ]
+        dfs = [load_component_data(driver, comp_class) for comp_class in component_classes]
         graph_df = pd.concat(dfs, ignore_index=True)
 
         # Clean up data

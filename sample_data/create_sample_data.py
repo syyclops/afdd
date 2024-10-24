@@ -47,9 +47,7 @@ async def append_sample_data(id_list, time, min, max):
                 )
             )
         insert_timeseries(conn, point_reading_list)
-        logging.info(
-            f"successfully appended at {datetime.datetime.now()} for the {time} second loop"
-        )
+        logging.info(f"successfully appended at {datetime.datetime.now()} for the {time} second loop")
         await asyncio.sleep(time)
 
 

@@ -11,8 +11,13 @@ def load_graph(devices: str) -> pd.DataFrame:
     Load our sample devices and points, takes in .ttl file of device info
     """
     import warnings
-    warnings.warn("The load_graph function is deprecated and will be removed in future versions.", DeprecationWarning, stacklevel=2)
-    
+
+    warnings.warn(
+        "The load_graph function is deprecated and will be removed in future versions.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     g = Graph()
 
     g.parse(devices, format="ttl")
@@ -114,9 +119,7 @@ def calculate_weighted_avg(
     return result
 
 
-def create_anomaly(
-    row, component, device, rule_id: int, points: List[URIRef]
-) -> List[tuple]:
+def create_anomaly(row, component, device, rule_id: int, points: List[URIRef]) -> List[tuple]:
     """Helper method to create anomaly objects and cast them to tuples given a row from the anomaly dataframe"""
     anomaly = Anomaly(
         start_time=row["start_time"],
