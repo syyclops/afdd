@@ -137,6 +137,12 @@ def load_timeseries(
     Creates a dataframe containing the timeseries data between given start and end time for given brick classes.
     The brick classes should just be passed in as the ending of the URI (everything after https://brickschema.org/schema/Brick#).
     It returns a multi-indexed dataframe where the level 0 index is component, the level 1 index is timestamp, and each column is a brick class.
+
+    Returns:
+        pd.DataFrame: A multi-indexed dataframe with the following columns:
+            - componentURI: URI of the component
+            - ts: Timestamp
+            - value: Value of the timeseries data
     """
     # gets all of the timeseriesids that correspond to the given brick class
     all_ts_ids = []
@@ -150,11 +156,11 @@ def load_timeseries(
     placeholders = ", ".join(["%s" for _ in all_ts_ids])
 
     query = f"""
-    SELECT ts, value, timeseriesid
-    FROM timeseries
-    WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
-    ORDER BY ts ASC
-  """
+      SELECT ts, value, timeseriesid
+      FROM timeseries
+      WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
+      ORDER BY ts ASC
+    """
 
     with conn.cursor() as cur:
         parameters = (*all_ts_ids, start_time, end_time)
