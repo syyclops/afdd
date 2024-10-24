@@ -1,4 +1,3 @@
-from rdflib import URIRef
 from typing import List
 import pandas as pd
 from psycopg import Connection
@@ -138,6 +137,12 @@ def load_timeseries(
     Creates a dataframe containing the timeseries data between given start and end time for given brick classes.
     The brick classes should just be passed in as the ending of the URI (everything after https://brickschema.org/schema/Brick#).
     It returns a multi-indexed dataframe where the level 0 index is component, the level 1 index is timestamp, and each column is a brick class.
+
+    Returns:
+        pd.DataFrame: A multi-indexed dataframe with the following columns:
+            - componentURI: URI of the component
+            - ts: Timestamp
+            - value: Value of the timeseries data
     """
     # gets all of the timeseriesids that correspond to the given brick class
     all_ts_ids = []
@@ -151,11 +156,11 @@ def load_timeseries(
     placeholders = ", ".join(["%s" for _ in all_ts_ids])
 
     query = f"""
-    SELECT ts, value, timeseriesid
-    FROM timeseries
-    WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
-    ORDER BY ts ASC
-  """
+      SELECT ts, value, timeseriesid
+      FROM timeseries
+      WHERE timeseriesid IN ({placeholders}) AND ts >= %s AND ts <= %s
+      ORDER BY ts ASC
+    """
 
     with conn.cursor() as cur:
         parameters = (*all_ts_ids, start_time, end_time)
@@ -222,7 +227,22 @@ def load_graph_neo4j(driver: GraphDatabase.driver, component_class: str) -> pd.D
 
 
 def load_component_data(driver: GraphDatabase.driver, component_class: str) -> pd.DataFrame:
-    """Load data for a single component class."""
+    """
+    Load the necessary sensor information for the given component class.
+
+    Args:
+        driver: Neo4j driver
+        component_class: The Brick class URI for the component
+
+    Returns:
+        pd.DataFrame: A dataframe with the following columns:
+            - point: URI of the point
+            - class: URI of the
+            - timeseriesid: Timeseries ID
+            - deviceURI: URI of the device
+            - componentURI: URI of the component
+    """
+
     query = """
     MATCH (c:Class) WHERE c.uri CONTAINS $component_class
     MATCH (c)-[:HAS_BRICK_CLASS]-(comp:Component)
@@ -236,19 +256,41 @@ def load_component_data(driver: GraphDatabase.driver, component_class: str) -> p
            d.uri AS deviceURI, 
            comp.uri AS componentURI
     """
-    return driver.execute_query(
-        query_=query,
-        component_class=component_class,
-        database_="neo4j",
-        result_transformer_=neo4j.Result.to_df,
-    )
+    try:
+        return driver.execute_query(
+            query_=query,
+            component_class=component_class,
+            database_="neo4j",
+            result_transformer_=neo4j.Result.to_df,
+        )
+    except Exception as e:
+        logger.error(f"Error loading data for component class {component_class}: {e}")
+        return pd.DataFrame()
 
 
 def load_graph_data(driver: GraphDatabase.driver, rules_list) -> pd.DataFrame:
-    """Main function to load all graph data."""
+    """
+    Load data from the graph that is needed to run the rules, based on the rules provided.
+
+    Args:
+        driver: Neo4j driver
+        rules_list: List of Rule objects
+
+    Returns:
+        pd.DataFrame: A dataframe with the following columns:
+            - point: URI of the point
+            - class: URI of the
+            - timeseriesid: Timeseries ID
+            - deviceURI: URI of the device
+            - componentURI: URI of the component
+    """
     # Get unique component classes from rules
     component_classes = {rule.component_type for rule in rules_list}
     logger.info(f"Loading data for components: {component_classes}")
+
+    if not component_classes:
+        logger.info("No component classes found in rules_list.")
+        return pd.DataFrame()
 
     # Load and process data
     try:
