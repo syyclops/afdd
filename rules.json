@@ -68,5 +68,19 @@
          "sleep_time": 86400,
          "severity": "high"
       }
+   },
+    {
+      "rule_id": 6,
+      "name": "Test Rule Trigger",
+      "component_type": "IAQ_Sensor_Equipment",
+      "sensor_types": ["CO2_Sensor"],
+      "description": "Should trigger a lot",
+      "condition": {
+         "equation": "CO2_Sensor > 350",
+         "metric": "average",
+         "duration": 600,
+         "sleep_time": 1800,
+         "severity": "critical"
+      }
    }
 ]

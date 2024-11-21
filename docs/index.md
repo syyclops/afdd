@@ -2,22 +2,6 @@
 
 This AFDD system detects unusual patterns (anomalies) from IoT sensors and records them in a PostgreSQL database. Anomalies happen when sensor data goes outside set limits, which are defined by Rules.
 
-## Project Structure
-
-```
-- afdd/                         # core application
-- neo4j/                        # neo4j setup
-- postgres/                     # postgres setup
-- sample_data/                  # randomly generates sensor data
-- scripts/
-    - past_data_analysis.py     # script for analyzing past data within time frame for one rule
-    - setup_db.py               # initializes postgres tables for hosted db
-- tests/
-- kaiterra_example.ttl          # contains an example graph of device and sensor info
-- kaiterra_dcoffice.ttl         # contains a graph of device and sensor info for kaiterra devices in the dc office
-- Brick.ttl                     # contains Brick schema ontology
-```
-
 ### Setup:
 
 Create .env file
@@ -47,19 +31,38 @@ poetry run afdd
 
 ## Creating Rules
 
-A rule defines when certain conditions happen, like if sensors detect high CO2 levels. It uses [Brick Schema](https://brickschema.org/) to standardize and track these conditions.
+A rule defines when certain conditions happen, like if sensors detect high CO2 levels. It uses [Brick Schema](https://brickschema.org/) to standardize and track these conditions, as well as COBie and BACnet.
 
 Add rules by editing the [rules.json](./rules.json)
 
 ### Structure of a rule
 
 - rule_id: A unique identifier for each rule.
-- name: Descriptive name of the rule.
-- component_type: The equipment type associated with the sensor, typically Indoor Air Quality (IAQ) sensors.
-- sensor_types: List of sensor types involved in the rule.
+- name: Name of the rule.
+- component_type: The Brick class that represents the equipment type
+- sensor_types: List of Brick classes for the points that are needed for this rule
 - description: A brief explanation of when the rule will trigger.
 - condition:
   - equation: The mathematical expression for the rule condition, indicating thresholds for sensor readings.
-  - metric: Type of calculation, usually "average."
+  - metric: "average", "max", "min"
   - duration: The time period over which the sensor readings are averaged, in seconds.
   - sleep_time: The time period before the rule can be re-triggered, in seconds.
+
+#### Example Rule
+
+```json
+{
+  "rule_id": 1,
+  "name": "High CO2",
+  "component_type": "IAQ_Sensor_Equipment",
+  "sensor_types": ["CO2_Sensor"],
+  "description": "Triggers when average CO2 level is between 1000 and 1500 ppm for 10 minutes",
+  "condition": {
+    "equation": "1000 < CO2_Sensor < 1500",
+    "metric": "average",
+    "duration": 600,
+    "sleep_time": 1800,
+    "severity": "high"
+  }
+}
+```
